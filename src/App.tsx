@@ -91,6 +91,19 @@ useEffect(() => {
 }
 	//Add the new task from TaskForm to the existing task list
 	function handleCreateTask(newTask: Task) {
+		const inProgressTaskCount = tasks.filter(
+	(task) => task.status === 'in-progress'
+).length
+// prevent user from adding more than set number of tasks to in-progress
+if (
+	newTask.status === 'in-progress' &&
+	inProgressTaskCount >= maxInProgressTasks
+) {
+	window.alert(
+		`Maximum limit reached. You can have up to ${maxInProgressTasks} tasks in progress to keep the workflow focused and manageable.`
+	)
+	return
+}
 		//spread 
 		setTasks((currentTasks) => [...currentTasks, newTask])
 		//Close the task form modal after adding the new task
@@ -103,6 +116,29 @@ useEffect(() => {
 	}
 	// Replace the edited task with its updated version
 	function handleUpdateTask(updatedTask: Task) {
+		const originalTask = tasks.find(
+	(task) => task.id === updatedTask.id
+)
+
+const isMovingIntoInProgress =
+	updatedTask.status === 'in-progress' &&
+	//only if it wasnt already in-progress before
+	originalTask?.status !== 'in-progress'
+
+const inProgressTaskCount = tasks.filter(
+	(task) => task.status === 'in-progress'
+).length
+
+if (
+	isMovingIntoInProgress &&
+	inProgressTaskCount >= maxInProgressTasks
+) {
+	window.alert(
+		`Maximum limit reached. You can have up to ${maxInProgressTasks} tasks in progress to keep the workflow focused and manageable.`
+	)
+	//task does not update
+	return false
+}
 		setTasks((currentTasks) =>
 			currentTasks.map((task) => {
 				if (task.id === updatedTask.id) {
@@ -115,6 +151,8 @@ useEffect(() => {
 
 		setTaskToEdit(null)
 		setIsTaskFormOpen(false)
+		//task will update 
+		return true
 	}
 	// Change the status of the task with the matching id
 	function handleTaskStatusChange(taskId: string, newStatus: TaskStatus) {
@@ -124,7 +162,7 @@ useEffect(() => {
 ).length
 //if there are X number of tasks - stops user from putting another in status in progress
 if (newStatus === 'in-progress' && inProgressTaskCount >= maxInProgressTasks) {
-	window.alert('Maximum limit reached. You can have up to ${maxInProgressTasks} tasks in progress to keep the workflow focused and manageable.')
+	window.alert(`Maximum limit reached. You can have up to ${maxInProgressTasks} tasks in progress to keep the workflow focused and manageable.`)
 	return
 }
 		setTasks((currentTasks) =>

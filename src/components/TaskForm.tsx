@@ -1,14 +1,14 @@
 //TASK. lets user create a task
 
 import type { FormEvent } from 'react'
-import type { Task, TaskPriority } from '../types/Task'
+import type { Task, TaskPriority, TaskStatus } from '../types/Task'
 import { isDueTomorrowOrEarlier } from '../utils/dateUtils'
 
 interface TaskFormProps {
 	//void: does not return a value
 	onCreateTask: (task: Task) => void
 	taskToEdit: Task | null
-	onUpdateTask: (task: Task) => void
+	onUpdateTask: (task: Task) => boolean
 }
 
 export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: TaskFormProps) {
@@ -23,10 +23,11 @@ export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: Tas
 		const dueDate = formData.get('dueDate') as string
 		//will be one of the values as decided in Task.ts
 		const priority = formData.get('priority') as TaskPriority
+		const status = formData.get('status') as TaskStatus
 		// Use the date helper to decide if the priority should be High
-const isEditingDoneTask = taskToEdit?.status === 'done'
+const isDoneTask = status === 'done'
 const shouldUseHighPriority =
-	!isEditingDoneTask && isDueTomorrowOrEarlier(dueDate)
+	!isDoneTask && isDueTomorrowOrEarlier(dueDate)
 const finalPriority: TaskPriority = shouldUseHighPriority
 	//if true - high	
 	? 'high'
@@ -47,9 +48,19 @@ if (shouldUseHighPriority) {
 				dueDate: dueDate,
 				//when due date is tomorrow or earlier
 				priority: finalPriority,
+				status: status,
 			}
 
-			onUpdateTask(updatedTask)
+			const wasTaskUpdated = onUpdateTask(updatedTask)
+
+if (!wasTaskUpdated) {
+	const statusSelect =
+		event.currentTarget.elements.namedItem('status')
+// Confirm that the field is a select element so its value can be changed safely
+	if (statusSelect instanceof HTMLSelectElement) {
+		statusSelect.value = taskToEdit.status
+	}
+}
 		} else {
 			const newTask: Task = {
 				id: crypto.randomUUID(),
@@ -58,14 +69,11 @@ if (shouldUseHighPriority) {
 				assignee: assignee,
 				dueDate: dueDate,
 				priority: finalPriority,
-				status: 'todo'
+				status: status
 			}
 
 			onCreateTask(newTask)
 		}
-
-		//resets form
-		event.currentTarget.reset()
 	}
 	return (
 		<section className="task-form-container">
@@ -108,6 +116,17 @@ if (shouldUseHighPriority) {
 					defaultValue={taskToEdit ? taskToEdit.dueDate : ''}
 					//not required
 				/>
+				<label htmlFor="task-status">Status</label>
+<select
+	id="task-status"
+	name="status"
+	//if user is editing the task - show current status. otherwise its add task - show to-do
+	defaultValue={taskToEdit ? taskToEdit.status : 'todo'}
+>
+	<option value="todo">To do</option>
+	<option value="in-progress">In progress</option>
+	<option value="done">Done</option>
+</select>
 				<label htmlFor="task-priority">Priority</label>
 				<select
 					id="task-priority"
