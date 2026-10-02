@@ -72,6 +72,12 @@ useEffect(() => {
 		setTaskToEdit(null)
 		setIsTaskFormOpen(true)
 	}
+	// Show the same warning whenever the In-progress limit is reached
+function showInProgressLimitAlert() {
+	window.alert(
+		`Maximum limit reached. You can have up to ${maxInProgressTasks} tasks in progress to keep the workflow focused and manageable.`
+	)
+}
 	function handleSetInProgressLimit() {
 	const enteredLimit = window.prompt(
 		'Set the maximum number of tasks allowed in progress:',
@@ -99,9 +105,7 @@ if (
 	newTask.status === 'in-progress' &&
 	inProgressTaskCount >= maxInProgressTasks
 ) {
-	window.alert(
-		`Maximum limit reached. You can have up to ${maxInProgressTasks} tasks in progress to keep the workflow focused and manageable.`
-	)
+	showInProgressLimitAlert()
 	return
 }
 		//spread 
@@ -133,9 +137,7 @@ if (
 	isMovingIntoInProgress &&
 	inProgressTaskCount >= maxInProgressTasks
 ) {
-	window.alert(
-		`Maximum limit reached. You can have up to ${maxInProgressTasks} tasks in progress to keep the workflow focused and manageable.`
-	)
+	showInProgressLimitAlert()
 	//task does not update
 	return false
 }
@@ -162,7 +164,7 @@ if (
 ).length
 //if there are X number of tasks - stops user from putting another in status in progress
 if (newStatus === 'in-progress' && inProgressTaskCount >= maxInProgressTasks) {
-	window.alert(`Maximum limit reached. You can have up to ${maxInProgressTasks} tasks in progress to keep the workflow focused and manageable.`)
+	showInProgressLimitAlert()
 	return
 }
 		setTasks((currentTasks) =>
