@@ -80,7 +80,7 @@ function showInProgressLimitAlert() {
 }
 	function handleSetInProgressLimit() {
 	const enteredLimit = window.prompt(
-		'Set the maximum number of tasks allowed in progress:',
+		'Set a maximum limit on in-progress tasks:',
 		String(maxInProgressTasks)
 	)
 

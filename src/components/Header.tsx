@@ -19,7 +19,7 @@ function Header({ onAddTask, onSetLimit }: HeaderProps) {
 	type="button"
 	onClick={onSetLimit}
 >
-	Settings
+	Edit task limit
 </button>
 				<button className="add-task-button" type="button" onClick={onAddTask}>
 					Add task
