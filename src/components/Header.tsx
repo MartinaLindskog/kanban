@@ -15,12 +15,12 @@ function Header({ onAddTask, onSetLimit }: HeaderProps) {
 			<h1 className="app-title">Catnip Kanban</h1>
 			<div className="header-actions">
 				<button
-	className="settings-button"
-	type="button"
-	onClick={onSetLimit}
->
-	Edit task limit
-</button>
+					className="settings-button"
+					type="button"
+					onClick={onSetLimit}
+				>
+					Edit task limit
+				</button>
 				<button className="add-task-button" type="button" onClick={onAddTask}>
 					Add task
 				</button>

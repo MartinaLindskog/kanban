@@ -37,7 +37,7 @@ export default function TaskCard({ task, onStatusChange, onDeleteTask, onEditTas
 			{task.assignee && (
 				<p><strong>Assigned to:</strong> {task.assignee}</p>
 			)}
-{task.dueDate && <p><strong>Due date:</strong> {task.dueDate}</p>}
+			{task.dueDate && <p><strong>Due date:</strong> {task.dueDate}</p>}
 			<p><strong>Priority:</strong> {task.priority}</p>
 			<button
 				className="task-edit-button"

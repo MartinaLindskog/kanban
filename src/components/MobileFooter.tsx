@@ -7,12 +7,12 @@ function MobileFooter({ onAddTask, onSetLimit }: MobileFooterProps) {
 	return (
 		<footer className="mobile-footer">
 			<button
-	className="settings-button"
-	type="button"
-	onClick={onSetLimit}
->
-	Edit task limit
-</button>
+				className="settings-button"
+				type="button"
+				onClick={onSetLimit}
+			>
+				Edit task limit
+			</button>
 			<button
 				className="footer-add-task-button"
 				type="button"

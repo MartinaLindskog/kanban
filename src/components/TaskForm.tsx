@@ -25,19 +25,19 @@ export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: Tas
 		const priority = formData.get('priority') as TaskPriority
 		const status = formData.get('status') as TaskStatus
 		// Use the date helper to decide if the priority should be High
-const isDoneTask = status === 'done'
-const shouldUseHighPriority =
-	!isDoneTask && isDueTomorrowOrEarlier(dueDate)
-const finalPriority: TaskPriority = shouldUseHighPriority
-	//if true - high	
-	? 'high'
-	//if false - priority is what user set
-	: priority
-if (shouldUseHighPriority) {
-	window.alert(
-		'Deadline approaching — priority automatically set to High.'
-	)
-}
+		const isDoneTask = status === 'done'
+		const shouldUseHighPriority =
+			!isDoneTask && isDueTomorrowOrEarlier(dueDate)
+		const finalPriority: TaskPriority = shouldUseHighPriority
+			//if true - high
+			? 'high'
+			//if false - priority is what user set
+			: priority
+		if (shouldUseHighPriority) {
+			window.alert(
+				'Deadline approaching — priority automatically set to High.'
+			)
+		}
 		// Update the selected task in edit mode, otherwise create a new task
 		if (taskToEdit) {
 			const updatedTask: Task = {
@@ -53,14 +53,14 @@ if (shouldUseHighPriority) {
 
 			const wasTaskUpdated = onUpdateTask(updatedTask)
 
-if (!wasTaskUpdated) {
-	const statusSelect =
-		event.currentTarget.elements.namedItem('status')
-// Confirm that the field is a select element so its value can be changed safely
-	if (statusSelect instanceof HTMLSelectElement) {
-		statusSelect.value = taskToEdit.status
-	}
-}
+			if (!wasTaskUpdated) {
+				const statusSelect =
+					event.currentTarget.elements.namedItem('status')
+				// Confirm that the field is a select element so its value can be changed safely
+				if (statusSelect instanceof HTMLSelectElement) {
+					statusSelect.value = taskToEdit.status
+				}
+			}
 		} else {
 			const newTask: Task = {
 				id: crypto.randomUUID(),
@@ -117,16 +117,16 @@ if (!wasTaskUpdated) {
 					//not required
 				/>
 				<label htmlFor="task-status">Status</label>
-<select
-	id="task-status"
-	name="status"
-	//if user is editing the task - show current status. otherwise its add task - show to-do
-	defaultValue={taskToEdit ? taskToEdit.status : 'todo'}
->
-	<option value="todo">To do</option>
-	<option value="in-progress">In progress</option>
-	<option value="done">Done</option>
-</select>
+				<select
+					id="task-status"
+					name="status"
+					//if user is editing the task - show current status. otherwise its add task - show to-do
+					defaultValue={taskToEdit ? taskToEdit.status : 'todo'}
+				>
+					<option value="todo">To do</option>
+					<option value="in-progress">In progress</option>
+					<option value="done">Done</option>
+				</select>
 				<label htmlFor="task-priority">Priority</label>
 				<select
 					id="task-priority"

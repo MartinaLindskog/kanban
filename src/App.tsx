@@ -2,7 +2,7 @@ import Header from './components/Header'
 import KanbanBoard from './components/KanbanBoard'
 import type { Task, TaskStatus } from './types/Task'
 import './App.css'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import TaskForm from './components/TaskForm'
 import MobileFooter from './components/MobileFooter'
 import { isDueTomorrowOrEarlier } from './utils/dateUtils'
@@ -17,10 +17,39 @@ function App() {
 	// Store the task that is currently being edited
 	// null when no task is chosen to change
 	const [taskToEdit, setTaskToEdit] = useState<Task | null>(null)
+	// Store a reference to the task modal's HTML element
+	const taskModalRef = useRef<HTMLDivElement>(null)
 	// Close the task form modal when user press escape on keyboard
 	useEffect(() => {
 		if (!isTaskFormOpen) return
 		function handleKeyDown(event: KeyboardEvent) {
+			//when user uses tab they should only be able to tab through the modal, not behind it
+			if (event.key === 'Tab') {
+				const focusableElements =
+					taskModalRef.current?.querySelectorAll<HTMLElement>(
+						'button, input, textarea, select'
+					)
+
+				if (!focusableElements || focusableElements.length === 0) return
+
+				const firstFocusableElement = focusableElements[0]
+				const lastFocusableElement =
+					focusableElements[focusableElements.length - 1]
+
+				if (
+					event.shiftKey &&
+					document.activeElement === firstFocusableElement
+				) {
+					event.preventDefault()
+					lastFocusableElement.focus()
+				} else if (
+					!event.shiftKey &&
+					document.activeElement === lastFocusableElement
+				) {
+					event.preventDefault()
+					firstFocusableElement.focus()
+				}
+			}
 			if (event.key === 'Escape') {
 				setTaskToEdit(null)
 				setIsTaskFormOpen(false)
@@ -30,42 +59,42 @@ function App() {
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown)
 		}
-			}, [isTaskFormOpen])
+	}, [isTaskFormOpen])
 	// Automatically update existing tasks when their due date becomes urgent
-useEffect(() => {
-	function updateDueTaskPriorities() {
-		setTasks((currentTasks) => {
-			let hasChanges = false
-			const updatedTasks = currentTasks.map((task) => {
-				if (
-					//we dont need this feature on tasks that are already done
-					task.status !== 'done' &&
-					task.priority !== 'high' &&
-					isDueTomorrowOrEarlier(task.dueDate)
-				) {
-					hasChanges = true
-					const updatedTask: Task = {
-						...task,
-						priority: 'high'
+	useEffect(() => {
+		function updateDueTaskPriorities() {
+			setTasks((currentTasks) => {
+				let hasChanges = false
+				const updatedTasks = currentTasks.map((task) => {
+					if (
+						//we dont need this feature on tasks that are already done
+						task.status !== 'done' &&
+						task.priority !== 'high' &&
+						isDueTomorrowOrEarlier(task.dueDate)
+					) {
+						hasChanges = true
+						const updatedTask: Task = {
+							...task,
+							priority: 'high'
+						}
+						return updatedTask
 					}
-					return updatedTask
-				}
-				return task
+					return task
+				})
+				return hasChanges ? updatedTasks : currentTasks
 			})
-			return hasChanges ? updatedTasks : currentTasks
-		})
-	}
-	updateDueTaskPriorities()
-	const intervalId = window.setInterval(
-		updateDueTaskPriorities,
-		//one minute - check is done once a minute
-		60_000
-	)
-	return () => {
-		// stop the interval when webbpage is closed etc
-		window.clearInterval(intervalId)
-	}
-}, [])
+		}
+		updateDueTaskPriorities()
+		const intervalId = window.setInterval(
+			updateDueTaskPriorities,
+			//one minute - check is done once a minute
+			60_000
+		)
+		return () => {
+			// stop the interval when webbpage is closed etc
+			window.clearInterval(intervalId)
+		}
+	}, [])
 
 	// Open an empty task form for creating a new task
 	function handleOpenAddTask() {
@@ -73,41 +102,41 @@ useEffect(() => {
 		setIsTaskFormOpen(true)
 	}
 	// Show the same warning whenever the In-progress limit is reached
-function showInProgressLimitAlert() {
-	window.alert(
-		`Maximum limit reached. You can have up to ${maxInProgressTasks} tasks in progress to keep the workflow focused and manageable.`
-	)
-}
-	function handleSetInProgressLimit() {
-	const enteredLimit = window.prompt(
-		'Set a maximum limit on in-progress tasks:',
-		String(maxInProgressTasks)
-	)
-
-	if (enteredLimit === null) return
-
-	const newLimit = Number(enteredLimit)
-
-	if (!Number.isInteger(newLimit) || newLimit < 1) {
-		window.alert('Enter a whole number of 1 or higher.')
-		return
+	function showInProgressLimitAlert() {
+		window.alert(
+			`Maximum limit reached. You can have up to ${maxInProgressTasks} tasks in progress to keep the workflow focused and manageable.`
+		)
 	}
+	function handleSetInProgressLimit() {
+		const enteredLimit = window.prompt(
+			'Set a maximum limit on in-progress tasks:',
+			String(maxInProgressTasks)
+		)
 
-	setMaxInProgressTasks(newLimit)
-}
+		if (enteredLimit === null) return
+
+		const newLimit = Number(enteredLimit)
+
+		if (!Number.isInteger(newLimit) || newLimit < 1) {
+			window.alert('Enter a whole number of 1 or higher.')
+			return
+		}
+
+		setMaxInProgressTasks(newLimit)
+	}
 	//Add the new task from TaskForm to the existing task list
 	function handleCreateTask(newTask: Task) {
 		const inProgressTaskCount = tasks.filter(
-	(task) => task.status === 'in-progress'
-).length
-// prevent user from adding more than set number of tasks to in-progress
-if (
-	newTask.status === 'in-progress' &&
-	inProgressTaskCount >= maxInProgressTasks
-) {
-	showInProgressLimitAlert()
-	return
-}
+			(task) => task.status === 'in-progress'
+		).length
+		// prevent user from adding more than set number of tasks to in-progress
+		if (
+			newTask.status === 'in-progress' &&
+			inProgressTaskCount >= maxInProgressTasks
+		) {
+			showInProgressLimitAlert()
+			return
+		}
 		//spread 
 		setTasks((currentTasks) => [...currentTasks, newTask])
 		//Close the task form modal after adding the new task
@@ -121,26 +150,26 @@ if (
 	// Replace the edited task with its updated version
 	function handleUpdateTask(updatedTask: Task) {
 		const originalTask = tasks.find(
-	(task) => task.id === updatedTask.id
-)
+			(task) => task.id === updatedTask.id
+		)
 
-const isMovingIntoInProgress =
-	updatedTask.status === 'in-progress' &&
-	//only if it wasnt already in-progress before
-	originalTask?.status !== 'in-progress'
+		const isMovingIntoInProgress =
+			updatedTask.status === 'in-progress' &&
+			//only if it wasnt already in-progress before
+			originalTask?.status !== 'in-progress'
 
-const inProgressTaskCount = tasks.filter(
-	(task) => task.status === 'in-progress'
-).length
+		const inProgressTaskCount = tasks.filter(
+			(task) => task.status === 'in-progress'
+		).length
 
-if (
-	isMovingIntoInProgress &&
-	inProgressTaskCount >= maxInProgressTasks
-) {
-	showInProgressLimitAlert()
-	//task does not update
-	return false
-}
+		if (
+			isMovingIntoInProgress &&
+			inProgressTaskCount >= maxInProgressTasks
+		) {
+			showInProgressLimitAlert()
+			//task does not update
+			return false
+		}
 		setTasks((currentTasks) =>
 			currentTasks.map((task) => {
 				if (task.id === updatedTask.id) {
@@ -158,27 +187,27 @@ if (
 	}
 	// Change the status of the task with the matching id
 	function handleTaskStatusChange(taskId: string, newStatus: TaskStatus) {
-	//counts how many tasks in status in progress
+		//counts how many tasks in status in progress
 		const inProgressTaskCount = tasks.filter(
-	(task) => task.status === 'in-progress'
-).length
-//if there are X number of tasks - stops user from putting another in status in progress
-if (newStatus === 'in-progress' && inProgressTaskCount >= maxInProgressTasks) {
-	showInProgressLimitAlert()
-	return
-}
+			(task) => task.status === 'in-progress'
+		).length
+		//if there are X number of tasks - stops user from putting another in status in progress
+		if (newStatus === 'in-progress' && inProgressTaskCount >= maxInProgressTasks) {
+			showInProgressLimitAlert()
+			return
+		}
 		setTasks((currentTasks) =>
 			currentTasks.map((task) => {
 				if (task.id === taskId) {
-	const shouldUseHighPriority =
-		newStatus === 'in-progress' &&
-		isDueTomorrowOrEarlier(task.dueDate)
-	return {
-		...task,
-		status: newStatus,
-		priority: shouldUseHighPriority ? 'high' : task.priority
-	}
-}
+					const shouldUseHighPriority =
+						newStatus === 'in-progress' &&
+						isDueTomorrowOrEarlier(task.dueDate)
+					return {
+						...task,
+						status: newStatus,
+						priority: shouldUseHighPriority ? 'high' : task.priority
+					}
+				}
 
 				return task
 			})
@@ -203,6 +232,7 @@ if (newStatus === 'in-progress' && inProgressTaskCount >= maxInProgressTasks) {
 			{isTaskFormOpen && (
 				<div className="modal-backdrop">
 					<div
+						ref={taskModalRef}
 						className="task-modal"
 						role="dialog"
 						aria-modal="true"
