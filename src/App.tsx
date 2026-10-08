@@ -6,11 +6,16 @@ import { useEffect, useState, useRef } from 'react'
 import TaskForm from './components/TaskForm'
 import MobileFooter from './components/MobileFooter'
 import { isDueTomorrowOrEarlier } from './utils/dateUtils'
+import { getTasks } from './services/taskService'
 
 
 function App() {
 	//Store all tasks in state so React updates the page when the list changes
 	const [tasks, setTasks] = useState<Task[]>([])
+	// Track whether tasks are currently being loaded
+	const [isLoadingTasks, setIsLoadingTasks] = useState(true)
+	// Store a user-friendly message if loading tasks fails
+	const [taskLoadError, setTaskLoadError] = useState<string | null>(null)
 	const [maxInProgressTasks, setMaxInProgressTasks] = useState(20)
 	// Keep track of if the task form modal is open. is closed from the start
 	const [isTaskFormOpen, setIsTaskFormOpen] = useState(false)
@@ -19,6 +24,21 @@ function App() {
 	const [taskToEdit, setTaskToEdit] = useState<Task | null>(null)
 	// Store a reference to the task modal's HTML element
 	const taskModalRef = useRef<HTMLDivElement>(null)
+	// Load tasks from the backend when the app opens
+	useEffect(() => {
+		async function loadTasks() {
+			try {
+				const loadedTasks = await getTasks()
+				setTasks(loadedTasks)
+			} catch (error) {
+				console.error(error)
+				setTaskLoadError('Could not load tasks. Please try again.')
+			} finally {
+				setIsLoadingTasks(false)
+			}
+		}
+		loadTasks()
+	}, [])
 	// Close the task form modal when user press escape on keyboard
 	useEffect(() => {
 		if (!isTaskFormOpen) return
@@ -257,6 +277,9 @@ function App() {
 					</div>
 				</div>
 			)}
+			{/* role status and alert is for screen readers to notify user*/}
+			{isLoadingTasks && <p role="status">Loading tasks...</p>}
+			{taskLoadError && <p role="alert">{taskLoadError}</p>}			
 			{/* Send array to board */}
 			<KanbanBoard 
 				tasks={tasks}
