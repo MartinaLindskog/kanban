@@ -1,12 +1,12 @@
 import Header from './components/Header'
 import KanbanBoard from './components/KanbanBoard'
-import type { Task, TaskStatus } from './types/Task'
+import type { Task, TaskStatus, NewTask } from './types/Task'
 import './App.css'
 import { useEffect, useState, useRef } from 'react'
 import TaskForm from './components/TaskForm'
 import MobileFooter from './components/MobileFooter'
 import { isDueTomorrowOrEarlier } from './utils/dateUtils'
-import { getTasks } from './services/taskService'
+import { getTasks, createTask } from './services/taskService'
 
 
 function App() {
@@ -145,7 +145,7 @@ function App() {
 		setMaxInProgressTasks(newLimit)
 	}
 	//Add the new task from TaskForm to the existing task list
-	function handleCreateTask(newTask: Task) {
+	async function handleCreateTask(newTask: NewTask) {
 		const inProgressTaskCount = tasks.filter(
 			(task) => task.status === 'in-progress'
 		).length
@@ -157,10 +157,16 @@ function App() {
 			showInProgressLimitAlert()
 			return
 		}
-		//spread 
-		setTasks((currentTasks) => [...currentTasks, newTask])
-		//Close the task form modal after adding the new task
-		setIsTaskFormOpen(false)
+		try {
+			const createdTask = await createTask(newTask)
+			//spread 
+			setTasks((currentTasks) => [...currentTasks, createdTask])
+			//Close the task form modal after adding the new task
+			setIsTaskFormOpen(false)
+		} catch (error) {
+			console.error(error)
+			window.alert('Could not create task. Please try again.')
+		}
 	}
 	// Select a task and open the form in edit mode
 	function handleOpenEditTask(task: Task) {
@@ -172,7 +178,6 @@ function App() {
 		const originalTask = tasks.find(
 			(task) => task.id === updatedTask.id
 		)
-
 		const isMovingIntoInProgress =
 			updatedTask.status === 'in-progress' &&
 			//only if it wasnt already in-progress before
@@ -181,7 +186,6 @@ function App() {
 		const inProgressTaskCount = tasks.filter(
 			(task) => task.status === 'in-progress'
 		).length
-
 		if (
 			isMovingIntoInProgress &&
 			inProgressTaskCount >= maxInProgressTasks
@@ -199,7 +203,6 @@ function App() {
 				return task
 			})
 		)
-
 		setTaskToEdit(null)
 		setIsTaskFormOpen(false)
 		//task will update 

@@ -20,3 +20,6 @@ export interface Task {
 	priority: TaskPriority
 	status: TaskStatus
 }
+
+//new tasks have all Task properties except id, which the server creates
+export type NewTask = Omit<Task, 'id'>

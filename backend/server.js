@@ -23,6 +23,9 @@ const app = express()
 // Allow the React frontend to communicate with this API
 app.use(cors())
 
+// Parse JSON sent from the React frontend
+app.use(express.json())
+
 // Store the port number used by the backend server
 const PORT = 5001 // min mac använder redan 5000 till nåt annat
 /* Port 5001 ska behållas medan vi arbetar lokalt, 
@@ -45,6 +48,22 @@ let tasks = [
 // Send all tasks when the frontend requests GET /api/tasks
 app.get('/api/tasks', (request, response) => {
 	response.status(200).json(tasks)
+})
+
+
+// Create a new task when the frontend sends POST /api/tasks
+app.post('/api/tasks', (request, response) => {
+	const newTask = {
+		...request.body,
+        /* Servern skapar id eftersom den ska äga den permanenta datan. 
+        nuvarande frontend skapar fortfarande också ett id, 
+        men tar bort den delen senare när jag kopplar formuläret till API */
+		id: crypto.randomUUID()
+	}
+
+	tasks.push(newTask)
+
+	response.status(201).json(newTask)
 })
 
 // Start the server and listen for incoming requests

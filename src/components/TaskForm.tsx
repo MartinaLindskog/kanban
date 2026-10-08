@@ -1,12 +1,12 @@
 //TASK. lets user create a task
 
 import type { FormEvent } from 'react'
-import type { Task, TaskPriority, TaskStatus } from '../types/Task'
+import type { Task, TaskPriority, TaskStatus, NewTask } from '../types/Task'
 import { isDueTomorrowOrEarlier } from '../utils/dateUtils'
 
 interface TaskFormProps {
 	//void: does not return a value
-	onCreateTask: (task: Task) => void
+	onCreateTask: (task: NewTask) => void
 	taskToEdit: Task | null
 	onUpdateTask: (task: Task) => boolean
 }
@@ -62,8 +62,7 @@ export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: Tas
 				}
 			}
 		} else {
-			const newTask: Task = {
-				id: crypto.randomUUID(),
+			const newTask: NewTask = {
 				title: title,
 				comment: comment,
 				assignee: assignee,
