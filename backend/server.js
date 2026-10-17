@@ -83,6 +83,36 @@ app.post('/api/tasks', (request, response) => {
 	response.status(201).json(newTask)
 })
 
+// Delete the task with the matching id
+app.delete('/api/tasks/:id', (request, response) => {
+	const taskExists = tasks.some((task) => task.id === request.params.id)
+	if (!taskExists) {
+		return response.status(404).json({
+			message: 'Task not found.'
+		})
+	}
+	tasks = tasks.filter((task) => task.id !== request.params.id)
+	response.status(204).send()
+})
+
+// Update the task with the matching id
+app.put('/api/tasks/:id', (request, response) => {
+	const taskExists = tasks.some((task) => task.id === request.params.id)
+	if (!taskExists) {
+		return response.status(404).json({
+			message: 'Task not found.'
+		})
+	}
+	const updatedTask = {
+		...request.body,
+		id: request.params.id
+	}
+	tasks = tasks.map((task) =>
+		task.id === request.params.id ? updatedTask : task
+	)
+	response.status(200).json(updatedTask)
+})
+
 // Send one cat image when the frontend requests GET /api/daily-cat
 app.get('/api/daily-cat', async (request, response) => {
 	// Convert the day number to the API's zero-based page number

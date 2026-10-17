@@ -6,7 +6,7 @@ import { useEffect, useState, useRef } from 'react'
 import TaskForm from './components/TaskForm'
 import MobileFooter from './components/MobileFooter'
 import { isDueTomorrowOrEarlier } from './utils/dateUtils'
-import { getTasks, createTask } from './services/taskService'
+import { getTasks, createTask, deleteTask, updateTask } from './services/taskService'
 
 
 
@@ -175,7 +175,7 @@ function App() {
 		setIsTaskFormOpen(true)
 	}
 	// Replace the edited task with its updated version
-	function handleUpdateTask(updatedTask: Task) {
+	async function handleUpdateTask(updatedTask: Task) {
 		const originalTask = tasks.find(
 			(task) => task.id === updatedTask.id
 		)
@@ -195,22 +195,32 @@ function App() {
 			//task does not update
 			return false
 		}
-		setTasks((currentTasks) =>
-			currentTasks.map((task) => {
-				if (task.id === updatedTask.id) {
-					return updatedTask
-				}
-
-				return task
-			})
-		)
-		setTaskToEdit(null)
-		setIsTaskFormOpen(false)
-		//task will update 
-		return true
+		try {
+			const savedTask = await updateTask(updatedTask)
+			setTasks((currentTasks) =>
+				currentTasks.map((task) => {
+					if (task.id === updatedTask.id) {
+						return savedTask
+					}
+					return task
+				})
+			)
+			setTaskToEdit(null)
+			setIsTaskFormOpen(false)
+			return true
+		} catch (error) {
+			console.error(error)
+			window.alert('Could not update task. Please try again.')
+			return false
+		}
 	}
 	// Change the status of the task with the matching id
-	function handleTaskStatusChange(taskId: string, newStatus: TaskStatus) {
+	async function handleTaskStatusChange(taskId: string, newStatus: TaskStatus) {
+		// Find the task that will be updated
+		const taskToUpdate = tasks.find((task) => task.id === taskId)
+		if (!taskToUpdate) {
+			return
+		}
 		//counts how many tasks in status in progress
 		const inProgressTaskCount = tasks.filter(
 			(task) => task.status === 'in-progress'
@@ -220,30 +230,42 @@ function App() {
 			showInProgressLimitAlert()
 			return
 		}
-		setTasks((currentTasks) =>
-			currentTasks.map((task) => {
-				if (task.id === taskId) {
-					const shouldUseHighPriority =
-						newStatus === 'in-progress' &&
-						isDueTomorrowOrEarlier(task.dueDate)
-					return {
-						...task,
-						status: newStatus,
-						priority: shouldUseHighPriority ? 'high' : task.priority
+		const shouldUseHighPriority =
+			newStatus === 'in-progress' &&
+			isDueTomorrowOrEarlier(taskToUpdate.dueDate)
+		const taskWithNewStatus: Task = {
+			...taskToUpdate,
+			status: newStatus,
+			priority: shouldUseHighPriority ? 'high' : taskToUpdate.priority
+		}
+		try {
+			const savedTask = await updateTask(taskWithNewStatus)
+			setTasks((currentTasks) =>
+				currentTasks.map((task) => {
+					if (task.id === taskId) {
+						return savedTask
 					}
-				}
-
-				return task
-			})
-		)
+					return task
+				})
+			)
+		} catch (error) {
+			console.error(error)
+			window.alert('Could not change task status. Please try again.')
+		}	
 	}
 	// Remove the task with the matching id from the task list
-	function handleDeleteTask(taskId: string) {
-		setTasks((currentTasks) =>
-			//!== taskId keeps all tasks that do not have the chosen id
-			//tasks with the chosen id is now not included in the array -> immutable update
-			currentTasks.filter((task) => task.id !== taskId)
-		)
+	async function handleDeleteTask(taskId: string) {
+		try {
+			await deleteTask(taskId)
+			setTasks((currentTasks) =>
+				//!== taskId keeps all tasks that do not have the chosen id
+				//tasks with the chosen id is now not included in the array -> immutable update
+				currentTasks.filter((task) => task.id !== taskId)
+			)
+		} catch (error) {
+			console.error(error)
+			window.alert('Could not delete task. Please try again.')
+		}
 	}
 	return (
 		// <> and </> makes a fragment. react wants a fragment to put the komponents in, this makes it without an extra html-element

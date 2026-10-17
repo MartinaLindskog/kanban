@@ -8,13 +8,14 @@ interface TaskFormProps {
 	//void: does not return a value
 	onCreateTask: (task: NewTask) => void
 	taskToEdit: Task | null
-	onUpdateTask: (task: Task) => boolean
+	onUpdateTask: (task: Task) => Promise<boolean>
 }
 
 export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: TaskFormProps) {
-	function handleSubmit(event: FormEvent<HTMLFormElement>) {
+	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault()
-		const formData = new FormData(event.currentTarget)
+		const form = event.currentTarget
+		const formData = new FormData(form)
 		const title = formData.get('title') as string
 		//will be an empty string if user dont write anything
 		const comment = formData.get('comment') as string
@@ -51,11 +52,10 @@ export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: Tas
 				status: status,
 			}
 
-			const wasTaskUpdated = onUpdateTask(updatedTask)
+			const wasTaskUpdated = await onUpdateTask(updatedTask)
 
 			if (!wasTaskUpdated) {
-				const statusSelect =
-					event.currentTarget.elements.namedItem('status')
+				const statusSelect = form.elements.namedItem('status')
 				// Confirm that the field is a select element so its value can be changed safely
 				if (statusSelect instanceof HTMLSelectElement) {
 					statusSelect.value = taskToEdit.status
