@@ -390,7 +390,21 @@
 	outline: 0.2rem solid var(--color-priority-low);
 }
 
+.daily-cat-modal {
+	color: var(--color-dark);
+}
 
+
+.daily-cat-image {
+	display: block;
+	max-width: 100%;
+	width: auto;
+	height: auto;
+	max-height: 60vh;
+	object-fit: contain;
+	margin: 0.75rem auto 0;
+	border-radius: 0.5rem;
+}
 
 
 

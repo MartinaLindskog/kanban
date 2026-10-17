@@ -1,6 +1,4 @@
-//HEADER
-//(reminder to myself tsx because im using "html-look-alike" code)
-
+import CatOfTheDay from './CatOfTheDay'
 
 interface HeaderProps {
 	onAddTask: () => void
@@ -24,6 +22,7 @@ function Header({ onAddTask, onSetLimit }: HeaderProps) {
 				<button className="add-task-button" type="button" onClick={onAddTask}>
 					Add task
 				</button>
+				<CatOfTheDay />
 			</div>
 		</header>
 	)

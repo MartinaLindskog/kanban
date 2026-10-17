@@ -1,3 +1,5 @@
+// Load values from the backend .env file
+import 'dotenv/config'
 // Import Express so this file can create an API server
 import express from 'express'
 // Import CORS so the React app can communicate with this server
@@ -32,6 +34,21 @@ const PORT = 5001 // min mac använder redan 5000 till nåt annat
 men normalt inte användas på samma sätt efter publicering.
 Det beror på hur backend publiceras */
 
+// Store the external endpoint used to request one cat image
+const CAT_API_URL = 'https://api.thecatapi.com/v1/images/search?limit=1'
+
+// Return today's number in the year, including leap years
+function getDayOfYear(date = new Date()) {
+	const startOfYear = Date.UTC(date.getUTCFullYear(), 0, 0)
+	const currentDate = Date.UTC(
+		date.getUTCFullYear(),
+		date.getUTCMonth(),
+		date.getUTCDate()
+	)
+	const millisecondsPerDay = 1000 * 60 * 60 * 24
+
+	return Math.floor((currentDate - startOfYear) / millisecondsPerDay)
+}
 
 // Store tasks temporarily in the server's memory
 let tasks = [
@@ -66,6 +83,26 @@ app.post('/api/tasks', (request, response) => {
 	response.status(201).json(newTask)
 })
 
+// Send one cat image when the frontend requests GET /api/daily-cat
+app.get('/api/daily-cat', async (request, response) => {
+	// Convert the day number to the API's zero-based page number
+	const page = getDayOfYear() - 1
+	// Use a fixed order so the selected image stays the same
+	const dailyCatUrl = `${CAT_API_URL}&page=${page}&order=ASC`
+	const catApiResponse = await fetch(dailyCatUrl, {
+		headers: {
+			'x-api-key': process.env.CAT_API_KEY
+		}
+	})
+	// Stop if The Cat API returns an error
+	if (!catApiResponse.ok) {
+		return response.status(502).json({
+			message: 'Could not load cat of the day.'
+		})
+	}
+	const catImages = await catApiResponse.json()
+	response.status(200).json(catImages[0])
+})
 // Start the server and listen for incoming requests
 app.listen(PORT, () => {
 	console.log(`Server running on http://localhost:${PORT}`)

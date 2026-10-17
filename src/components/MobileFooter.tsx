@@ -1,3 +1,5 @@
+import CatOfTheDay from './CatOfTheDay'
+
 interface MobileFooterProps {
 	onAddTask: () => void
 	onSetLimit: () => void
@@ -20,6 +22,7 @@ function MobileFooter({ onAddTask, onSetLimit }: MobileFooterProps) {
 			>
 				Add task
 			</button>
+			<CatOfTheDay />
 		</footer>
 	)
 }
