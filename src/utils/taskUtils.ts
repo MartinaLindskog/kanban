@@ -17,3 +17,22 @@ export function countTasksByStatus(
 	return tasks.filter((task) => task.status === status).length
 }
 
+// Set urgent unfinished tasks to high priority
+export function applyUrgentPriorities(tasks: Task[]): Task[] {
+	let hasChanges = false
+
+	const updatedTasks = tasks.map((task): Task => {
+		if (
+			task.priority !== 'high' &&
+			shouldTaskUseHighPriority(task.status, task.dueDate)
+		) {
+			hasChanges = true
+			return {
+				...task,
+				priority: 'high'
+			}
+		}
+		return task
+	})
+	return hasChanges ? updatedTasks : tasks
+}

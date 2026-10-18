@@ -2,11 +2,11 @@ import Header from './components/Header'
 import KanbanBoard from './components/KanbanBoard'
 import type { Task, TaskStatus, NewTask } from './types/Task'
 import './App.css'
-import { useEffect, useState, useRef } from 'react'
-import TaskForm from './components/TaskForm'
+import { useEffect, useState } from 'react'
+import TaskModal from './components/TaskModal'
 import MobileFooter from './components/MobileFooter'
 import { getTasks, createTask, deleteTask, updateTask } from './services/taskService'
-import { shouldTaskUseHighPriority, countTasksByStatus } from './utils/taskUtils'
+import { shouldTaskUseHighPriority, countTasksByStatus, applyUrgentPriorities } from './utils/taskUtils'
 
 
 function App() {
@@ -22,14 +22,12 @@ function App() {
 	// Store the task that is currently being edited
 	// null when no task is chosen to change
 	const [taskToEdit, setTaskToEdit] = useState<Task | null>(null)
-	// Store a reference to the task modal's HTML element
-	const taskModalRef = useRef<HTMLDivElement>(null)
 	// Load tasks from the backend when the app opens
 	useEffect(() => {
 		async function loadTasks() {
 			try {
 				const loadedTasks = await getTasks()
-				setTasks(loadedTasks)
+				setTasks(applyUrgentPriorities(loadedTasks))
 			} catch (error) {
 				console.error(error)
 				setTaskLoadError('Could not load tasks. Please try again.')
@@ -39,68 +37,12 @@ function App() {
 		}
 		loadTasks()
 	}, [])
-	// Close the task form modal when user press escape on keyboard
-	useEffect(() => {
-		if (!isTaskFormOpen) return
-		function handleKeyDown(event: KeyboardEvent) {
-			//when user uses tab they should only be able to tab through the modal, not behind it
-			if (event.key === 'Tab') {
-				const focusableElements =
-					taskModalRef.current?.querySelectorAll<HTMLElement>(
-						'button, input, textarea, select'
-					)
-
-				if (!focusableElements || focusableElements.length === 0) return
-
-				const firstFocusableElement = focusableElements[0]
-				const lastFocusableElement =
-					focusableElements[focusableElements.length - 1]
-
-				if (
-					event.shiftKey &&
-					document.activeElement === firstFocusableElement
-				) {
-					event.preventDefault()
-					lastFocusableElement.focus()
-				} else if (
-					!event.shiftKey &&
-					document.activeElement === lastFocusableElement
-				) {
-					event.preventDefault()
-					firstFocusableElement.focus()
-				}
-			}
-			if (event.key === 'Escape') {
-				setTaskToEdit(null)
-				setIsTaskFormOpen(false)
-			}
-		}
-		window.addEventListener('keydown', handleKeyDown)
-		return () => {
-			window.removeEventListener('keydown', handleKeyDown)
-		}
-	}, [isTaskFormOpen])
 	// Automatically update existing tasks when their due date becomes urgent
 	useEffect(() => {
 		function updateDueTaskPriorities() {
-			setTasks((currentTasks) => {
-				let hasChanges = false
-				const updatedTasks = currentTasks.map((task) => {
-					if (
-						task.priority !== 'high' &&
-						shouldTaskUseHighPriority(task.status, task.dueDate)
-					) {
-						hasChanges = true
-						const updatedTask: Task = {
-							...task,
-							priority: 'high'
-						}
-						return updatedTask
-					}
-					return task
-				})
-				return hasChanges ? updatedTasks : currentTasks
-			})
+			setTasks((currentTasks) => 
+				applyUrgentPriorities(currentTasks)
+			)
 		}
 		updateDueTaskPriorities()
 		const intervalId = window.setInterval(
@@ -118,6 +60,11 @@ function App() {
 	function handleOpenAddTask() {
 		setTaskToEdit(null)
 		setIsTaskFormOpen(true)
+	}
+	// Close the task form and stop editing the selected task
+	function handleCloseTaskForm() {
+		setTaskToEdit(null)
+		setIsTaskFormOpen(false)
 	}
 	// Show the same warning whenever the In-progress limit is reached
 	function showInProgressLimitAlert() {
@@ -266,32 +213,12 @@ function App() {
 			/>
 			{/* if false dont show new task form modal */}
 			{isTaskFormOpen && (
-				<div className="modal-backdrop">
-					<div
-						ref={taskModalRef}
-						className="task-modal"
-						role="dialog"
-						aria-modal="true"
-						aria-label={taskToEdit ? 'Edit task' : 'Add task'}
-					>
-						<button
-							className="modal-close-button"
-							type="button"
-							onClick={() => {
-								setTaskToEdit(null)
-								setIsTaskFormOpen(false)
-							}}
-							aria-label="Close task form"
-						>
-							×
-						</button>
-						<TaskForm
-							onCreateTask={handleCreateTask}
-							onUpdateTask={handleUpdateTask}
-							taskToEdit={taskToEdit}
-						/>
-					</div>
-				</div>
+				<TaskModal
+					taskToEdit={taskToEdit}
+					onCreateTask={handleCreateTask}
+					onUpdateTask={handleUpdateTask}
+					onClose={handleCloseTaskForm}
+				/>
 			)}
 			{/* role status and alert is for screen readers to notify user*/}
 			{isLoadingTasks && <p role="status">Loading tasks...</p>}
