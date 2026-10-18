@@ -35,7 +35,7 @@ men normalt inte användas på samma sätt efter publicering.
 Det beror på hur backend publiceras */
 
 // Store the external endpoint used to request one cat image
-const CAT_API_URL = 'https://api.thecatapi.com/v1/images/search?limit=1'
+const CAT_API_URL = 'https://api.thecatapi.com/v1/images/search?limit=1&has_breeds=1&include_breeds=1'
 
 // Return today's number in the year, including leap years
 function getDayOfYear(date = new Date()) {
@@ -131,6 +131,12 @@ app.get('/api/daily-cat', async (request, response) => {
 		})
 	}
 	const catImages = await catApiResponse.json()
+	// Stop if The Cat API does not return an image
+	if (catImages.length === 0) {
+		return response.status(404).json({
+			message: 'No cat image is available for today.'
+		})
+	}
 	response.status(200).json(catImages[0])
 })
 // Start the server and listen for incoming requests

@@ -25,8 +25,10 @@ function CatOfTheDay( { iconOnly = false }: CatOfTheDayProps) {
 		try {
 			const loadedCat = await getDailyCat()
 			setCatImage(loadedCat)
-		} catch {
-	        setCatError('Could not load cat of the day.')
+		} catch (error) {
+	        setCatError(
+				error instanceof Error ? error.message : 'Could not load cat of the day.'
+			)
         } finally {
 			setIsLoadingCat(false)
 		}
@@ -63,11 +65,16 @@ function CatOfTheDay( { iconOnly = false }: CatOfTheDayProps) {
                         {isLoadingCat && <p role="status">Loading cat...</p>}
                         {catError && <p role="alert">{catError}</p>}
                         {!isLoadingCat && catImage && (
+                        <>
 	                        <img
 		                        className="daily-cat-image"
 		                        src={catImage.url}
 		                        alt="Cat of the day"
 	                        />
+                            <p className="daily-cat-breed">
+                                <strong>Breed:</strong> {catImage.breeds[0]?.name ?? 'Unknown'}
+                            </p>
+                        </>
                         )}
 					</div>
 				</div>

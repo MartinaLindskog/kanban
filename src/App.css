@@ -37,10 +37,11 @@
 .mobile-footer {
 	position: fixed;
 	bottom: 0.5rem;
-	left: 50%;
+	left: 0;
+	right: 0;
 	width: calc(100% - 1rem);
 	max-width: 25rem;
-	transform: translateX(-50%);
+	margin-inline: auto;
 	z-index: 900;
 	display: flex;
 	justify-content: space-evenly;

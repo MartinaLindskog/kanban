@@ -8,7 +8,8 @@ export async function getDailyCat(): Promise<CatImage> {
 	const response = await fetch(DAILY_CAT_API_URL)
 
 	if (!response.ok) {
-		throw new Error(`Could not load the daily cat: ${response.status}`)
+		const errorData: { message?: string } = await response.json()
+        throw new Error(errorData.message ?? 'Could not load cat of the day.')
 	}
 
 	const catImage: CatImage = await response.json()
