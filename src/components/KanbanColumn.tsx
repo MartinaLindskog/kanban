@@ -4,7 +4,7 @@
 
 
 //react hook
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { Task, TaskStatus } from '../types/Task'
 import TaskCard from './TaskCard'
 
@@ -30,10 +30,13 @@ interface KanbanColumnProps {
 function KanbanColumn({ title, tasks, imageSrc, onStatusChange, onDeleteTask, status, onEditTask }: KanbanColumnProps) {
 	//starting value is closed aka false
 	const [isOpen, setIsOpen] = useState(false)
-	// Create a copy of the tasks and sort them by priority
-	const sortedTasks = [...tasks].sort(
-		//note to self: the tasks witht the same priority will be sorted after where they were in the first array, aka when it was added. first to last.
-		(a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
+	// Copy and re-sort the tasks only when this column's tasks change
+	const sortedTasks = useMemo(
+		() =>
+			[...tasks].sort(
+				(a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
+			),
+		[tasks]
 	)
 	return (
 		<section className={`kanban-column kanban-column--${status}`}>
