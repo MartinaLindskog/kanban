@@ -1,6 +1,10 @@
 :root {
 	--color-dark: #27221d;
 	--color-light: #f2eeea;
+	--theme-primary: var(--color-dark);
+	--theme-contrast: var(--color-light);
+	--theme-background: var(--theme-primary);
+	--theme-text: var(--theme-contrast);
 	--color-todo: #e4d8cc;
 	--color-in-progress: #fde298;
 	--color-done: #eceec7;
@@ -28,8 +32,8 @@
 	font: 18px/145% var(--sans);
 	letter-spacing: 0.18px;
 	color-scheme: light dark;
-	color: var(--color-light);
-	background: var(--bg);
+	color: var(--theme-text);
+	background: var(--theme-background);
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
@@ -39,6 +43,12 @@
 		font-size: 16px;
 	}
 }
+
+:root[data-theme='light'] {
+	--theme-primary: var(--color-light);
+	--theme-contrast: var(--color-dark);
+}
+
 
 @media (prefers-color-scheme: dark) {
 	:root {
@@ -84,9 +94,9 @@ option {
 }
 
 button {
-	background-color: var(--color-dark);
-	color: var(--color-light);
-	border: 1px solid var(--color-light);
+	background-color: var(--theme-primary);
+	color: var(--theme-contrast);
+	border: 1px solid var(--theme-contrast);
 	border-radius: 0.5rem;
 }
 

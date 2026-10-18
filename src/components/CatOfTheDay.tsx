@@ -2,8 +2,12 @@ import { useState } from 'react'
 import type { CatImage } from '../types/CatImage'
 import { getDailyCat } from '../services/catService'
 
+interface CatOfTheDayProps {
+	iconOnly?: boolean
+}
+
 // Display the button and content for the daily cat feature
-function CatOfTheDay() {
+function CatOfTheDay( { iconOnly = false }: CatOfTheDayProps) {
     // Track whether the daily cat modal is open
 	const [isCatModalOpen, setIsCatModalOpen] = useState(false)
     // Store the cat image returned by the backend
@@ -32,10 +36,12 @@ function CatOfTheDay() {
 			<button
 				className="daily-cat-button"
 				type="button"
+                aria-label="Show cat of the day"
+                title="Show cat of the day"
 				onClick={handleShowDailyCat}
                 disabled={isLoadingCat}
 			>
-				Cat of the day
+				{iconOnly ? '😻' : 'Cat of the day'}
 			</button>
             {isCatModalOpen && (
 				<div className="modal-backdrop">

@@ -183,7 +183,7 @@
 	}
 }
 .app-header {
-	background-color: var(--color-dark);
+	background-color: var(--theme-primary);
 	background-image: url('./assets/header.png');
 	background-size: contain;
 	background-position: top center;
@@ -220,20 +220,36 @@
 
 .mobile-footer {
 	position: fixed;
-	right: 0.3rem;
-	bottom: 0.15rem;
-	left: 0.3rem;
+	bottom: 0.5rem;
+	left: 50%;
+	width: calc(100% - 1rem);
+	max-width: 25rem;
+	transform: translateX(-50%);
 	z-index: 900;
 	display: flex;
-	justify-content: center;
-	padding: 0.75rem;
+	justify-content: space-evenly;
+	padding: 0.25rem;
 	box-sizing: border-box;
 	background-color: color-mix(
 		in srgb,
-		var(--color-dark) 90%,
+		var(--theme-primary) 90%,
 		transparent
 	);
-	border-radius: 0.5rem;
+	outline: 1px solid color-mix(
+	in srgb,
+	var(--theme-contrast) 25%,
+	transparent
+	);
+	border-radius: 999px;
+}
+
+.mobile-footer > button,
+.mobile-footer > .daily-cat > .daily-cat-button {
+	width: 2.75rem;
+	height: 2.75rem;
+	padding: 0;
+	font-size: 1.25rem;
+	line-height: 1;
 }
 
 
@@ -254,7 +270,7 @@
 }
 
 .column-heading h2 {
-	color: var(--color-light);
+	color: var(--theme-contrast);
 }
 
 .kanban-board {
@@ -269,7 +285,7 @@
 	align-items: center;
 	gap: 0.5rem;
 	padding: 0.1rem;
-	outline: 0.1rem solid var(--color-light);
+	outline: 0.1rem solid var(--theme-contrast);
 	border-radius: 0.5rem;
 }
 
@@ -306,7 +322,7 @@
 
 .task-form label {
 	font-family: var(--sans);
-	color: var(--color-dark);
+	color: var(--theme-primary);
 }
 
 .task-form input,
@@ -314,8 +330,10 @@
 .task-form select,
 .task-form option {
 	font-family: var(--sans);
-	color: var(--color-light);
-	background-color: var(--color-dark);
+	color: var(--theme-contrast);
+	background-color: var(--theme-primary);
+	border: 1px solid var(--theme-contrast);
+	border-radius: 0.5rem;
 }
 
 .task-form button {
@@ -342,11 +360,16 @@
 	border-radius: 0.75rem;
 	background-color: color-mix(
 		in srgb,
-		var(--color-light) 80%,
+		var(--theme-contrast) 80%,
 		transparent
 	);
 	position: relative;
 }
+
+.task-modal h2 {
+	color: var(--theme-primary);
+}
+
 .modal-close-button {
 	position: absolute;
 	top: 0.75rem;
@@ -391,7 +414,7 @@
 }
 
 .daily-cat-modal {
-	color: var(--color-dark);
+	color: var(--theme-primary);
 }
 
 

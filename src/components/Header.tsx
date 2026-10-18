@@ -1,4 +1,5 @@
 import CatOfTheDay from './CatOfTheDay'
+import ThemeToggle from './ThemeToggle'
 
 interface HeaderProps {
 	onAddTask: () => void
@@ -12,6 +13,7 @@ function Header({ onAddTask, onSetLimit }: HeaderProps) {
 		<header className="app-header">
 			<h1 className="app-title">Catnip Kanban</h1>
 			<div className="header-actions">
+				<ThemeToggle />
 				<button
 					className="settings-button"
 					type="button"
