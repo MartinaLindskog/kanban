@@ -2,7 +2,7 @@
 
 import type { FormEvent } from 'react'
 import type { Task, TaskPriority, TaskStatus, NewTask } from '../types/Task'
-import { isDueTomorrowOrEarlier } from '../utils/dateUtils'
+import { shouldTaskUseHighPriority } from '../utils/taskUtils'
 
 interface TaskFormProps {
 	//void: does not return a value
@@ -25,10 +25,8 @@ export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: Tas
 		//will be one of the values as decided in Task.ts
 		const priority = formData.get('priority') as TaskPriority
 		const status = formData.get('status') as TaskStatus
-		// Use the date helper to decide if the priority should be High
-		const isDoneTask = status === 'done'
-		const shouldUseHighPriority =
-			!isDoneTask && isDueTomorrowOrEarlier(dueDate)
+		// Use the shared task rule to check whether the priority should be High
+		const shouldUseHighPriority = shouldTaskUseHighPriority(status, dueDate)
 		const finalPriority: TaskPriority = shouldUseHighPriority
 			//if true - high
 			? 'high'

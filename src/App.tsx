@@ -5,9 +5,8 @@ import './App.css'
 import { useEffect, useState, useRef } from 'react'
 import TaskForm from './components/TaskForm'
 import MobileFooter from './components/MobileFooter'
-import { isDueTomorrowOrEarlier } from './utils/dateUtils'
 import { getTasks, createTask, deleteTask, updateTask } from './services/taskService'
-
+import { shouldTaskUseHighPriority, countTasksByStatus } from './utils/taskUtils'
 
 
 function App() {
@@ -88,10 +87,8 @@ function App() {
 				let hasChanges = false
 				const updatedTasks = currentTasks.map((task) => {
 					if (
-						//we dont need this feature on tasks that are already done
-						task.status !== 'done' &&
 						task.priority !== 'high' &&
-						isDueTomorrowOrEarlier(task.dueDate)
+						shouldTaskUseHighPriority(task.status, task.dueDate)
 					) {
 						hasChanges = true
 						const updatedTask: Task = {
@@ -147,9 +144,7 @@ function App() {
 	}
 	//Add the new task from TaskForm to the existing task list
 	async function handleCreateTask(newTask: NewTask) {
-		const inProgressTaskCount = tasks.filter(
-			(task) => task.status === 'in-progress'
-		).length
+		const inProgressTaskCount = countTasksByStatus(tasks, 'in-progress')
 		// prevent user from adding more than set number of tasks to in-progress
 		if (
 			newTask.status === 'in-progress' &&
@@ -183,10 +178,7 @@ function App() {
 			updatedTask.status === 'in-progress' &&
 			//only if it wasnt already in-progress before
 			originalTask?.status !== 'in-progress'
-
-		const inProgressTaskCount = tasks.filter(
-			(task) => task.status === 'in-progress'
-		).length
+		const inProgressTaskCount = countTasksByStatus(tasks, 'in-progress')	
 		if (
 			isMovingIntoInProgress &&
 			inProgressTaskCount >= maxInProgressTasks
@@ -221,18 +213,16 @@ function App() {
 		if (!taskToUpdate) {
 			return
 		}
-		//counts how many tasks in status in progress
-		const inProgressTaskCount = tasks.filter(
-			(task) => task.status === 'in-progress'
-		).length
+		const inProgressTaskCount = countTasksByStatus(tasks, 'in-progress')
 		//if there are X number of tasks - stops user from putting another in status in progress
 		if (newStatus === 'in-progress' && inProgressTaskCount >= maxInProgressTasks) {
 			showInProgressLimitAlert()
 			return
 		}
-		const shouldUseHighPriority =
-			newStatus === 'in-progress' &&
-			isDueTomorrowOrEarlier(taskToUpdate.dueDate)
+		const shouldUseHighPriority = shouldTaskUseHighPriority(
+			newStatus,
+			taskToUpdate.dueDate
+		)
 		const taskWithNewStatus: Task = {
 			...taskToUpdate,
 			status: newStatus,
