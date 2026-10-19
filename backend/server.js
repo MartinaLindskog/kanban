@@ -35,6 +35,52 @@ function getDayOfYear(date = new Date()) {
 	return Math.floor((currentDate - startOfYear) / millisecondsPerDay)
 }
 
+// Send the shared board settings to the frontend
+app.get('/api/board-settings', async (request, response) => {
+	const { data, error } = await supabase
+		.from('board_settings')
+		.select('max_in_progress_tasks')
+		.eq('id', 'main')
+		.single()
+	if (error) {
+		console.error(error)
+		return response.status(500).json({
+			message: 'Could not load board settings.'
+		})
+	}
+	response.status(200).json({
+		maxInProgressTasks: data.max_in_progress_tasks
+	})
+})
+
+// Update the shared in-progress limit
+app.put('/api/board-settings', async (request, response) => {
+	const newLimit = Number(request.body.maxInProgressTasks)
+	// Reject values that are not positive whole numbers
+	if (!Number.isInteger(newLimit) || newLimit < 1) {
+		return response.status(400).json({
+			message: 'The task limit must be a whole number of 1 or higher.'
+		})
+	}
+	const { data, error } = await supabase
+		.from('board_settings')
+		.update({
+			max_in_progress_tasks: newLimit
+		})
+		.eq('id', 'main')
+		.select('max_in_progress_tasks')
+		.single()
+	if (error) {
+		console.error(error)
+		return response.status(500).json({
+			message: 'Could not update board settings.'
+		})
+	}
+	response.status(200).json({
+		maxInProgressTasks: data.max_in_progress_tasks
+	})
+})
+
 // Send all tasks when the frontend requests GET /api/tasks
 app.get('/api/tasks', async (request, response) => {
 	const { data, error } = await supabase

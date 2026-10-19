@@ -9,6 +9,7 @@ import { getTasks, createTask, deleteTask, updateTask } from './services/taskSer
 import { shouldTaskUseHighPriority, countTasksByStatus, applyUrgentPriorities } from './utils/taskUtils'
 import LoginForm from './components/LoginForm'
 import { useAuth } from './context/AuthContext'
+import { getMaxInProgressTasks, updateMaxInProgressTasks } from './services/boardSettingsService'
 
 function App() {
 	const { session, isLoading: isLoadingSession } = useAuth()
@@ -47,6 +48,19 @@ function App() {
 		}
 		loadTasks()
 	}, [session])
+	// Load the saved in-progress limit after sign-in
+	useEffect(() => {
+		if (!session) return
+		async function loadBoardSettings() {
+			try {
+				const savedLimit = await getMaxInProgressTasks()
+				setMaxInProgressTasks(savedLimit)
+			} catch (error) {
+				console.error(error)
+			}
+		}
+		void loadBoardSettings()
+	}, [session])
 	// Automatically update existing tasks when their due date becomes urgent
 	useEffect(() => {
 		function updateDueTaskPriorities() {
@@ -82,22 +96,24 @@ function App() {
 			`Maximum limit reached. You can have up to ${maxInProgressTasks} tasks in progress to keep the workflow focused and manageable.`
 		)
 	}
-	function handleSetInProgressLimit() {
+	async function handleSetInProgressLimit() {
 		const enteredLimit = window.prompt(
 			'Set a maximum limit on in-progress tasks:',
 			String(maxInProgressTasks)
 		)
-
 		if (enteredLimit === null) return
-
 		const newLimit = Number(enteredLimit)
-
 		if (!Number.isInteger(newLimit) || newLimit < 1) {
 			window.alert('Enter a whole number of 1 or higher.')
 			return
 		}
-
-		setMaxInProgressTasks(newLimit)
+		try {
+			const savedLimit = await updateMaxInProgressTasks(newLimit)
+			setMaxInProgressTasks(savedLimit)
+		} catch (error) {
+			console.error(error)
+			window.alert('Could not save the task limit. Please try again.')
+		}
 	}
 	//Add the new task from TaskForm to the existing task list
 	async function handleCreateTask(newTask: NewTask) {
