@@ -1,6 +1,5 @@
-// TASKS. show the task.
-
 import type { Task, TaskStatus } from '../types/Task'
+import { useAuth } from '../context/AuthContext'
 
 interface TaskCardProps {
 	task: Task
@@ -10,6 +9,7 @@ interface TaskCardProps {
 }
 
 export default function TaskCard({ task, onStatusChange, onDeleteTask, onEditTask }: TaskCardProps) {
+	const { role } = useAuth()
 	// Ask for confirmation before deleting the task
 	function handleDeleteClick() {
 		const shouldDelete = window.confirm(
@@ -22,14 +22,16 @@ export default function TaskCard({ task, onStatusChange, onDeleteTask, onEditTas
 	return (
 		//classes: task-card, and based on status and prio
 		<article className={`task-card task-card--${task.status} task-card--priority-${task.priority}`}>
-			<button
-				className="task-delete-button"
-				type="button"
-				onClick={handleDeleteClick}
-				aria-label={`Delete ${task.title}`}
-			>
-				×
-			</button>
+			{role === 'admin' && (
+				<button
+					className="task-delete-button"
+					type="button"
+					onClick={handleDeleteClick}
+					aria-label={`Delete ${task.title}`}
+				>
+					×
+				</button>
+			)}
 			<h3>{task.title}</h3>
 
 			{task.comment && <p>{task.comment}</p>}

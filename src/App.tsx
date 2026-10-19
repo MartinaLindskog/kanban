@@ -7,9 +7,11 @@ import TaskModal from './components/TaskModal'
 import MobileFooter from './components/MobileFooter'
 import { getTasks, createTask, deleteTask, updateTask } from './services/taskService'
 import { shouldTaskUseHighPriority, countTasksByStatus, applyUrgentPriorities } from './utils/taskUtils'
-
+import LoginForm from './components/LoginForm'
+import { useAuth } from './context/AuthContext'
 
 function App() {
+	const { session, isLoading: isLoadingSession } = useAuth()
 	//Store all tasks in state so React updates the page when the list changes
 	const [tasks, setTasks] = useState<Task[]>([])
 	// Track whether tasks are currently being loaded
@@ -24,6 +26,14 @@ function App() {
 	const [taskToEdit, setTaskToEdit] = useState<Task | null>(null)
 	// Load tasks from the backend when the app opens
 	useEffect(() => {
+		// Do not load tasks when no user is signed in
+		if (!session) {
+			setTasks([])
+			setIsLoadingTasks(false)
+			return
+		}
+		setIsLoadingTasks(true)
+		setTaskLoadError(null)
 		async function loadTasks() {
 			try {
 				const loadedTasks = await getTasks()
@@ -36,7 +46,7 @@ function App() {
 			}
 		}
 		loadTasks()
-	}, [])
+	}, [session])
 	// Automatically update existing tasks when their due date becomes urgent
 	useEffect(() => {
 		function updateDueTaskPriorities() {
@@ -203,6 +213,24 @@ function App() {
 			console.error(error)
 			window.alert('Could not delete task. Please try again.')
 		}
+	}
+	if (isLoadingSession) {
+		return (
+			<p className="auth-status" role="status">
+				Checking login...
+			</p>
+		)
+	}	
+	if (!session) {
+		return (
+			<>
+				<Header
+					onAddTask={handleOpenAddTask}
+					onSetLimit={handleSetInProgressLimit}
+				/>
+				<LoginForm />
+			</>
+		)
 	}
 	return (
 		// <> and </> makes a fragment. react wants a fragment to put the komponents in, this makes it without an extra html-element

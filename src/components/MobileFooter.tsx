@@ -1,5 +1,7 @@
 import CatOfTheDay from './CatOfTheDay'
 import ThemeToggle from './ThemeToggle'
+import { useAuth } from '../context/AuthContext'
+import LogoutButton from './LogoutButton'
 
 interface MobileFooterProps {
 	onAddTask: () => void
@@ -7,18 +9,21 @@ interface MobileFooterProps {
 }
 
 function MobileFooter({ onAddTask, onSetLimit }: MobileFooterProps) {
+	const { role } = useAuth()
 	return (
 		<footer className="mobile-footer">
 			<ThemeToggle iconOnly />
-			<button
-				className="settings-button"
-				type="button"
-				aria-label="Edit maximum tasks"
-				title="Edit maximum tasks"
-				onClick={onSetLimit}
-			>
-				⚙️
-			</button>
+			{role === 'admin' && (
+				<button
+					className="settings-button"
+					type="button"
+					aria-label="Edit maximum tasks"
+					title="Edit maximum tasks"
+					onClick={onSetLimit}
+				>
+					⚙️
+				</button>
+			)}	
 			<button
 				className="footer-add-task-button"
 				type="button"
@@ -29,6 +34,7 @@ function MobileFooter({ onAddTask, onSetLimit }: MobileFooterProps) {
 				+
 			</button>
 			<CatOfTheDay iconOnly />
+			<LogoutButton iconOnly />
 		</footer>
 	)
 }
