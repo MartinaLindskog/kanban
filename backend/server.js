@@ -1,11 +1,8 @@
-// Load values from the backend .env file
 import 'dotenv/config'
-// Import Express so this file can create an API server
 import express from 'express'
-// Import CORS so the React app can communicate with this server
 import cors from 'cors'
-// Import the shared Supabase database client
 import supabase from './supabaseClient.js'
+import { requireAuth, requireAdmin } from './middleware/authMiddleware.js'
 
 // Create the Express application
 const app = express()
@@ -36,7 +33,7 @@ function getDayOfYear(date = new Date()) {
 }
 
 // Send the shared board settings to the frontend
-app.get('/api/board-settings', async (request, response) => {
+app.get('/api/board-settings', requireAuth, async (request, response) => {
 	const { data, error } = await supabase
 		.from('board_settings')
 		.select('max_in_progress_tasks')
@@ -54,7 +51,7 @@ app.get('/api/board-settings', async (request, response) => {
 })
 
 // Update the shared in-progress limit
-app.put('/api/board-settings', async (request, response) => {
+app.put('/api/board-settings', requireAuth, requireAdmin, async (request, response) => {
 	const newLimit = Number(request.body.maxInProgressTasks)
 	// Reject values that are not positive whole numbers
 	if (!Number.isInteger(newLimit) || newLimit < 1) {
@@ -82,7 +79,7 @@ app.put('/api/board-settings', async (request, response) => {
 })
 
 // Send all tasks when the frontend requests GET /api/tasks
-app.get('/api/tasks', async (request, response) => {
+app.get('/api/tasks', requireAuth, async (request, response) => {
 	const { data, error } = await supabase
 		.from('tasks')
 		.select('*')
@@ -107,7 +104,7 @@ app.get('/api/tasks', async (request, response) => {
 })
 
 // Create a new task when the frontend sends POST /api/tasks
-app.post('/api/tasks', async (request, response) => {
+app.post('/api/tasks', requireAuth, async (request, response) => {
 	// Convert the submitted task to database column names
 	const taskToInsert = {
 		title: request.body.title,
@@ -142,7 +139,7 @@ app.post('/api/tasks', async (request, response) => {
 })
 
 // Delete the task with the matching id
-app.delete('/api/tasks/:id', async (request, response) => {
+app.delete('/api/tasks/:id', requireAuth, requireAdmin, async (request, response) => {
 	const { data, error } = await supabase
 		.from('tasks')
 		.delete()
@@ -164,7 +161,7 @@ app.delete('/api/tasks/:id', async (request, response) => {
 })
 
 // Update the task with the matching id
-app.put('/api/tasks/:id', async (request, response) => {
+app.put('/api/tasks/:id', requireAuth, async (request, response) => {
 	// Convert the submitted changes to database column names	
 	const taskToUpdate = {
 		title: request.body.title,
@@ -205,7 +202,7 @@ app.put('/api/tasks/:id', async (request, response) => {
 })
 
 // Send one cat image when the frontend requests GET /api/daily-cat
-app.get('/api/daily-cat', async (request, response) => {
+app.get('/api/daily-cat', requireAuth, async (request, response) => {
 	// Convert the day number to the API's zero-based page number
 	const page = getDayOfYear() - 1
 	// Use a fixed order so the selected image stays the same
