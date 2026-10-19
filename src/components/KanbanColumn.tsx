@@ -1,10 +1,4 @@
-//COLUMNS for tasks in to-do, in-progress or done 
-//the 3 columns are similar, so better to have 1 function that can be reused
-//child to KanbanBoard
-
-
-//react hook
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import type { Task, TaskStatus } from '../types/Task'
 import TaskCard from './TaskCard'
 
@@ -28,8 +22,18 @@ interface KanbanColumnProps {
 }
 
 function KanbanColumn({ title, tasks, imageSrc, onStatusChange, onDeleteTask, status, onEditTask }: KanbanColumnProps) {
-	//starting value is closed aka false
-	const [isOpen, setIsOpen] = useState(false)
+	// Restore whether this column was previously open
+	const [isOpen, setIsOpen] = useState(() => {
+		const savedIsOpen = localStorage.getItem(`kanban-column-${status}-open`)
+		return savedIsOpen === 'true'
+	})
+	// Save this column's open state in the browser
+	useEffect(() => {
+		localStorage.setItem(
+			`kanban-column-${status}-open`,
+			String(isOpen)
+		)
+	}, [isOpen, status])
 	// Copy and re-sort the tasks only when this column's tasks change
 	const sortedTasks = useMemo(
 		() =>
