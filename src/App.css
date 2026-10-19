@@ -69,6 +69,10 @@
 	line-height: 1;
 }
 
+.mobile-footer > .footer-add-task-button {
+	font-size: 1.8rem;
+	font-weight: 700;
+}
 
 .add-task-button {
 	margin-left: auto;
