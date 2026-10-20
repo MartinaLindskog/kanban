@@ -1,19 +1,19 @@
-//TASK. lets user create a task
-
-import type { FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import type { Task, TaskPriority, TaskStatus, NewTask } from '../types/Task'
 import { shouldTaskUseHighPriority } from '../utils/taskUtils'
 
 interface TaskFormProps {
-	//void: does not return a value
-	onCreateTask: (task: NewTask) => void
+	onCreateTask: (task: NewTask) => Promise<void>
 	taskToEdit: Task | null
 	onUpdateTask: (task: Task) => Promise<boolean>
 }
 
 export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: TaskFormProps) {
+	const [isSubmitting, setIsSubmitting] = useState(false)
 	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault()
+		if (isSubmitting) return
+		setIsSubmitting(true)
 		const form = event.currentTarget
 		const formData = new FormData(form)
 		const title = formData.get('title') as string
@@ -49,9 +49,7 @@ export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: Tas
 				priority: finalPriority,
 				status: status,
 			}
-
 			const wasTaskUpdated = await onUpdateTask(updatedTask)
-
 			if (!wasTaskUpdated) {
 				const statusSelect = form.elements.namedItem('status')
 				// Confirm that the field is a select element so its value can be changed safely
@@ -68,9 +66,9 @@ export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: Tas
 				priority: finalPriority,
 				status: status
 			}
-
-			onCreateTask(newTask)
+			await onCreateTask(newTask)
 		}
+		setIsSubmitting(false)
 	}
 	return (
 		<section className="task-form-container">
@@ -139,9 +137,10 @@ export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: Tas
 					<option value="medium">Medium</option>
 					<option value="low">Low</option>
 				</select>
-				<button type="submit">
-					{/* if the task is being edited the button says Save, otherwise Add task */}
-					{taskToEdit ? 'Save' : 'Add task'}
+				<button type="submit" disabled={isSubmitting}>
+					{isSubmitting
+						? 'Saving...'
+						: (taskToEdit ? 'Save' : 'Add task')}
 				</button>
 			</form>
 		</section>

@@ -4,7 +4,7 @@ import TaskForm from './TaskForm'
 
 interface TaskModalProps {
 	taskToEdit: Task | null
-	onCreateTask: (task: NewTask) => void
+	onCreateTask: (task: NewTask) => Promise<void>
 	onUpdateTask: (task: Task) => Promise<boolean>
 	onClose: () => void
 }

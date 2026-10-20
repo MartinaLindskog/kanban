@@ -375,7 +375,7 @@
 	color: var(--color-priority-high);
 }
 
-.login-form button:disabled {
+button:disabled {
 	opacity: 0.45;
 	cursor: not-allowed;
 }
