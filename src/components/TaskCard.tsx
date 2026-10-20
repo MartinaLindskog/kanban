@@ -41,38 +41,40 @@ export default function TaskCard({ task, onStatusChange, onDeleteTask, onEditTas
 			)}
 			{task.dueDate && <p><strong>Due date:</strong> {task.dueDate}</p>}
 			<p><strong>Priority:</strong> {task.priority}</p>
-			<button
-				className="task-edit-button"
-				type="button"
-				onClick={() => onEditTask(task)}
-			>
-				Edit
-			</button>
-			{task.status === 'todo' && (
+			<div className="task-card-actions">
 				<button
+					className="task-edit-button"
 					type="button"
-					onClick={() => onStatusChange(task.id, 'in-progress')}
+					onClick={() => onEditTask(task)}
 				>
-					Move to In progress
-				</button>
-			)}
+					Edit
+				</button>	
+				{task.status === 'todo' && (
+					<button
+						type="button"
+						onClick={() => onStatusChange(task.id, 'in-progress')}
+					>
+						Move to In progress
+					</button>
+				)}
 
-			{task.status === 'in-progress' && (
-				<button
-					type="button"
-					onClick={() => onStatusChange(task.id, 'done')}
-				>
-					Move to Done
-				</button>
-			)}
-			{task.status === 'done' && (
-				<button
-					type="button"
-					onClick={() => onStatusChange(task.id, 'in-progress')}
-				>
-					Move back to In progress
-				</button>
-			)}
+				{task.status === 'in-progress' && (
+					<button
+						type="button"
+						onClick={() => onStatusChange(task.id, 'done')}
+					>
+						Move to Done
+					</button>
+				)}
+				{task.status === 'done' && (
+					<button
+						type="button"
+						onClick={() => onStatusChange(task.id, 'in-progress')}
+					>
+						Move back to In progress
+					</button>
+				)}
+			</div> 
 		</article>
 	)
 }

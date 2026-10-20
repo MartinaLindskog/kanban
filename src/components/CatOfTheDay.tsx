@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { CatImage } from '../types/CatImage'
 import { getDailyCat } from '../services/catService'
+import LoadingIndicator from './LoadingIndicator'
 
 interface CatOfTheDayProps {
 	iconOnly?: boolean
@@ -62,7 +63,7 @@ function CatOfTheDay( { iconOnly = false }: CatOfTheDayProps) {
 							×
 						</button>
 						<h2>Cat of the day</h2>
-                        {isLoadingCat && <p role="status">Loading cat...</p>}
+                        {isLoadingCat && (<LoadingIndicator message="Loading cat..." />)}
                         {catError && <p role="alert">{catError}</p>}
                         {!isLoadingCat && catImage && (
                         <>

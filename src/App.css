@@ -98,6 +98,7 @@
 	display: grid;
 	gap: 1rem;
 	margin-bottom: 4.5rem;
+	padding-inline: 0.25rem;
 }
 
 .kanban-column {
@@ -117,6 +118,7 @@
 	gap: 0.5rem;
 	padding: 0.5rem;
 	box-sizing: border-box;
+	align-items: start;
 }
 
 .task-list > p {
@@ -199,9 +201,22 @@
 
 .task-card {
 	position: relative;
-	padding-right: 3rem;
+	padding: 0.75rem;
+	text-align: left;
 	color: var(--color-dark);
 	border-radius: 0.5rem;
+}
+
+.task-card p + p {
+	margin-top: 0.5rem;
+}
+
+.task-card-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 0.5rem;
+	margin-top: 0.75rem;
 }
 
 .task-delete-button {
@@ -238,7 +253,6 @@
 	color: var(--theme-primary);
 }
 
-
 .daily-cat-image {
 	display: block;
 	max-width: 100%;
@@ -248,6 +262,48 @@
 	object-fit: contain;
 	margin: 0.75rem auto 0;
 	border-radius: 0.5rem;
+}
+
+.loading-indicator {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	min-height: 7rem;
+	text-align: center;
+	color: var(--theme-primary);
+}
+
+.loading-indicator--overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 1100;
+	min-height: 0;
+	color: var(--theme-text);
+	background-color: color-mix(
+		in srgb,
+		var(--theme-background) 85%,
+		transparent
+	);
+}
+
+.loading-indicator-image {
+	display: block;
+	width: 5rem;
+	height: 5rem;
+	object-fit: contain;
+	animation: loading-cat-spin 1.5s linear infinite;
+}
+
+@keyframes loading-cat-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.loading-indicator p {
+	margin: 0;
 }
 
 .login-page {

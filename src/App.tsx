@@ -10,6 +10,7 @@ import { shouldTaskUseHighPriority, countTasksByStatus, applyUrgentPriorities } 
 import LoginForm from './components/LoginForm'
 import { useAuth } from './context/AuthContext'
 import { getMaxInProgressTasks, updateMaxInProgressTasks } from './services/boardSettingsService'
+import LoadingIndicator from './components/LoadingIndicator'
 
 function App() {
 	const { session, isLoading: isLoadingSession } = useAuth()
@@ -232,9 +233,10 @@ function App() {
 	}
 	if (isLoadingSession) {
 		return (
-			<p className="auth-status" role="status">
-				Checking login...
-			</p>
+			<LoadingIndicator
+				message="Checking login..."
+				overlay
+				/>
 		)
 	}	
 	if (!session) {
@@ -264,8 +266,12 @@ function App() {
 					onClose={handleCloseTaskForm}
 				/>
 			)}
-			{/* role status and alert is for screen readers to notify user*/}
-			{isLoadingTasks && <p role="status">Loading tasks...</p>}
+			{isLoadingTasks && (
+				<LoadingIndicator
+					message="Loading tasks..."
+					overlay
+				/>
+			)}
 			{taskLoadError && <p role="alert">{taskLoadError}</p>}			
 			{/* Send array to board */}
 			<KanbanBoard 
