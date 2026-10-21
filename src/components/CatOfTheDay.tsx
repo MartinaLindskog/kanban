@@ -9,13 +9,9 @@ interface CatOfTheDayProps {
 
 // Display the button and content for the daily cat feature
 function CatOfTheDay( { iconOnly = false }: CatOfTheDayProps) {
-	// Track whether the daily cat modal is open
 	const [isCatModalOpen, setIsCatModalOpen] = useState(false)
-	// Store the cat image returned by the backend
 	const [catImage, setCatImage] = useState<CatImage | null>(null)
-	// Track whether the cat image is being loaded
 	const [isLoadingCat, setIsLoadingCat] = useState(false)
-	// Store an error message if the cat image cannot be loaded
 	const [catError, setCatError] = useState('')
 	// Open the modal and load today's cat image
 	async function handleShowDailyCat() {

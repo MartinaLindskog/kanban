@@ -5,6 +5,7 @@ interface LoadingIndicatorProps {
 	overlay?: boolean
 }
 
+// Display a loading message with an optional full-page overlay
 export default function LoadingIndicator({
 	message,
 	overlay = false

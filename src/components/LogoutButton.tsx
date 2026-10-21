@@ -4,6 +4,7 @@ interface LogoutButtonProps {
 	iconOnly?: boolean
 }
 
+// Display a responsive button that signs out the current user
 export default function LogoutButton({ iconOnly = false }: LogoutButtonProps) {
 	const { signOut } = useAuth()
 	return (

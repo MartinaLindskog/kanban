@@ -1,7 +1,5 @@
-// Load the backend environment variables
+// Load backend environment variables before creating the Supabase client
 import 'dotenv/config'
-
-// Import the function used to create a Supabase connection
 import { createClient } from '@supabase/supabase-js'
 
 // Read the database address and secret key from .env

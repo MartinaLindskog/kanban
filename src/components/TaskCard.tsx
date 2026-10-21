@@ -8,6 +8,7 @@ interface TaskCardProps {
 	onEditTask: (task: Task) => void
 }
 
+// Display task details and the actions available for its status and user role
 export default function TaskCard({ task, onStatusChange, onDeleteTask, onEditTask }: TaskCardProps) {
 	const { role } = useAuth()
 	// Ask for confirmation before deleting the task
@@ -20,7 +21,6 @@ export default function TaskCard({ task, onStatusChange, onDeleteTask, onEditTas
 		}
 	}
 	return (
-		//classes: task-card, and based on status and prio
 		<article className={`task-card task-card--${task.status} task-card--priority-${task.priority}`}>
 			{role === 'admin' && (
 				<button

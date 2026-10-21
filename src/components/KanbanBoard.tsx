@@ -1,13 +1,9 @@
-//BOARD - where the columns are
-//parent to KanbanColumn
-
 import KanbanColumn from './KanbanColumn'
 import type { Task, TaskStatus } from '../types/Task'
 import todoImage from '../assets/To-do.png'
 import inProgressImage from '../assets/in-progress.png'
 import doneImage from '../assets/done.png'
 
-//must have property array of tasks
 interface KanbanBoardProps {
 	tasks: Task[]
 	onStatusChange: (taskId: string, newStatus: TaskStatus) => void
@@ -15,8 +11,8 @@ interface KanbanBoardProps {
 	onEditTask: (task: Task) => void
 }
 
-function KanbanBoard(props: KanbanBoardProps) {
-	//filter through tasks and make a new array with only matches  
+// Group tasks by status and display the three Kanban columns
+function KanbanBoard(props: KanbanBoardProps) { 
 	const todoTasks = props.tasks.filter((task) => task.status === 'todo')
 	const inProgressTasks = props.tasks.filter(
 		(task) => task.status === 'in-progress',
@@ -24,7 +20,6 @@ function KanbanBoard(props: KanbanBoardProps) {
 	const doneTasks = props.tasks.filter((task) => task.status === 'done')
 	return (
 		<main className="kanban-board" aria-label="Kanban board">
-			{/* Call the same component three times with different titles and their array*/}
 			<KanbanColumn
 				title="To do"
 				status="todo"

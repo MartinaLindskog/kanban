@@ -9,6 +9,7 @@ interface TaskModalProps {
 	onClose: () => void
 }
 
+// Display the task form inside an accessible modal dialog
 export default function TaskModal({
 	taskToEdit,
 	onCreateTask,
@@ -16,7 +17,7 @@ export default function TaskModal({
 	onClose
 }: TaskModalProps) {
 	const taskModalRef = useRef<HTMLDivElement>(null)
-	// Close the modal when the user presses Escape
+	// Keep keyboard focus inside the modal and close it with Escape
 	useEffect(() => {
 		function handleKeyDown(event: KeyboardEvent) {
 			if (event.key === 'Tab') {

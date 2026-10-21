@@ -8,8 +8,10 @@ interface TaskFormProps {
 	onUpdateTask: (task: Task) => Promise<boolean>
 }
 
+// Display the form used to create or edit a task
 export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: TaskFormProps) {
 	const [isSubmitting, setIsSubmitting] = useState(false)
+	// Handle form submission by creating or updating a task
 	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault()
 		if (isSubmitting) return
@@ -17,27 +19,21 @@ export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: Tas
 		const form = event.currentTarget
 		const formData = new FormData(form)
 		const title = formData.get('title') as string
-		//will be an empty string if user dont write anything
 		const comment = formData.get('comment') as string
 		const assignee = formData.get('assignee') as string
-		//will be an empty string if user doesnt choose a date
 		const dueDate = formData.get('dueDate') as string
-		//will be one of the values as decided in Task.ts
 		const priority = formData.get('priority') as TaskPriority
 		const status = formData.get('status') as TaskStatus
-		// Use the shared task rule to check whether the priority should be High
+		// Use the shared task rule to determine the final priority
 		const shouldUseHighPriority = shouldTaskUseHighPriority(status, dueDate)
 		const finalPriority: TaskPriority = shouldUseHighPriority
-			//if true - high
 			? 'high'
-			//if false - priority is what user set
 			: priority
 		if (shouldUseHighPriority) {
 			window.alert(
 				'Deadline approaching — priority automatically set to High.'
 			)
 		}
-		// Update the selected task in edit mode, otherwise create a new task
 		if (taskToEdit) {
 			const updatedTask: Task = {
 				...taskToEdit,
@@ -45,7 +41,6 @@ export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: Tas
 				comment: comment,
 				assignee: assignee,
 				dueDate: dueDate,
-				//when due date is tomorrow or earlier
 				priority: finalPriority,
 				status: status,
 			}
@@ -72,18 +67,14 @@ export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: Tas
 	}
 	return (
 		<section>
-			{/* if edit task then show edit task, otherwise show add task */}
 			<h2>{taskToEdit ? 'Edit task' : 'Add task'}</h2>
 			<form className="task-form" onSubmit={handleSubmit}>
 				<label htmlFor="task-title">Title</label>
 				<input
-					// reminder for myself: id here is the html-id, not the id as in task.id
 					id="task-title"
 					name="title"
 					type="text"
-					//task to edit? if yes then use task's title, otherwise empty
 					defaultValue={taskToEdit ? taskToEdit.title : ''}
-					//easier for user to start typing here immediately 
 					autoFocus 
 					required
 				/>
@@ -93,7 +84,6 @@ export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: Tas
 					name="comment"
 					rows={3}
 					defaultValue={taskToEdit ? taskToEdit.comment : ''}
-					//not required
 				/>
 				<label htmlFor="task-assignee">Assigned to</label>
 				<input
@@ -101,7 +91,6 @@ export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: Tas
 					name="assignee"
 					type="text"
 					defaultValue={taskToEdit ? taskToEdit.assignee : ''}
-					//not required 
 				/>
 				<label htmlFor="task-due-date">Due date</label>
 				<input
@@ -109,13 +98,11 @@ export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: Tas
 					name="dueDate"
 					type="date"
 					defaultValue={taskToEdit ? taskToEdit.dueDate : ''}
-					//not required
 				/>
 				<label htmlFor="task-status">Status</label>
 				<select
 					id="task-status"
 					name="status"
-					//if user is editing the task - show current status. otherwise its add task - show to-do
 					defaultValue={taskToEdit ? taskToEdit.status : 'todo'}
 				>
 					<option value="todo">To do</option>
@@ -129,7 +116,6 @@ export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: Tas
 					defaultValue={taskToEdit ? taskToEdit.priority : ''}
 					required
 				>
-					{/* disabled: you cant choose this as an option */}
 					<option value="" disabled>
 						Select priority
 					</option>

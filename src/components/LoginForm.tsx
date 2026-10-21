@@ -1,12 +1,14 @@
 import { type FormEvent, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 
+// Display the login form and authentication errors
 export default function LoginForm() {
 	const { signIn } = useAuth()
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 	const [errorMessage, setErrorMessage] = useState('')
 	const [isSubmitting, setIsSubmitting] = useState(false)
+	// Submit the entered credentials and handle login errors
 	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault()
 		setErrorMessage('')

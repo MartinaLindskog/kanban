@@ -3,14 +3,13 @@ import type { Task, TaskStatus } from '../types/Task'
 import TaskCard from './TaskCard'
 
 
-// define the order in which task priorities should be displayed. 1 shows first etc.
+// Define the display order for task priorities
 const priorityOrder = {
 	high: 1,
 	medium: 2,
 	low: 3
 }
 
-//properties: must be stringn and task array, image string etc
 interface KanbanColumnProps {
 	title: string
 	tasks: Task[]
@@ -21,6 +20,7 @@ interface KanbanColumnProps {
 	onEditTask: (task: Task) => void
 }
 
+// Display and remember the open state of one Kanban column
 function KanbanColumn({ title, tasks, imageSrc, onStatusChange, onDeleteTask, status, onEditTask }: KanbanColumnProps) {
 	// Restore whether this column was previously open
 	const [isOpen, setIsOpen] = useState(() => {
@@ -46,7 +46,6 @@ function KanbanColumn({ title, tasks, imageSrc, onStatusChange, onDeleteTask, st
 		<section className={`kanban-column kanban-column--${status}`}>
 			<img className="column-image" src={imageSrc} alt="" />
 			<div className="column-heading">
-				{/* title + length of this column's task array */}
 				<h2>{title} ({tasks.length})</h2>
 				<button
 					type="button"
@@ -57,11 +56,9 @@ function KanbanColumn({ title, tasks, imageSrc, onStatusChange, onDeleteTask, st
 					<span aria-hidden="true">{isOpen ? '▲' : '▼'}</span>
 				</button>
 			</div>
-			{/* if is Open is true - create content. if false - dont. And... */}
 			{isOpen && (
 				<div className="task-list">
 					{tasks.length === 0 && <p>No tasks yet.</p>}
-					{/* use the sorted array to make task cards */}
 					{sortedTasks.map((task) => (
 						<TaskCard 
 							key={task.id} 

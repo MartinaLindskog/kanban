@@ -12,23 +12,17 @@ import { useAuth } from './context/AuthContext'
 import { getMaxInProgressTasks, updateMaxInProgressTasks } from './services/boardSettingsService'
 import LoadingIndicator from './components/LoadingIndicator'
 
+// Manage authentication, tasks, board settings and the main app layout
 function App() {
 	const { session, isLoading: isLoadingSession } = useAuth()
-	//Store all tasks in state so React updates the page when the list changes
 	const [tasks, setTasks] = useState<Task[]>([])
-	// Track whether tasks are currently being loaded
 	const [isLoadingTasks, setIsLoadingTasks] = useState(true)
-	// Store a user-friendly message if loading tasks fails
 	const [taskLoadError, setTaskLoadError] = useState<string | null>(null)
 	const [maxInProgressTasks, setMaxInProgressTasks] = useState(20)
-	// Keep track of if the task form modal is open. is closed from the start
 	const [isTaskFormOpen, setIsTaskFormOpen] = useState(false)
-	// Store the task that is currently being edited
-	// null when no task is chosen to change
 	const [taskToEdit, setTaskToEdit] = useState<Task | null>(null)
-	// Load tasks from the backend when the app opens
+	// Load tasks after sign-in and clear them after sign-out	
 	useEffect(() => {
-		// Do not load tasks when no user is signed in
 		if (!session) {
 			setTasks([])
 			setIsLoadingTasks(false)
@@ -72,11 +66,10 @@ function App() {
 		updateDueTaskPriorities()
 		const intervalId = window.setInterval(
 			updateDueTaskPriorities,
-			//one minute - check is done once a minute
+			// Recheck once per minute
 			60_000
 		)
 		return () => {
-			// stop the interval when webbpage is closed etc
 			window.clearInterval(intervalId)
 		}
 	}, [])
@@ -96,6 +89,7 @@ function App() {
 			`Maximum limit reached. You can have up to ${maxInProgressTasks} tasks in progress to keep the workflow focused and manageable.`
 		)
 	}
+	// Prompt an admin to validate and save a new in-progress limit
 	async function handleSetInProgressLimit() {
 		const enteredLimit = window.prompt(
 			'Set a maximum limit on in-progress tasks:',
@@ -115,10 +109,10 @@ function App() {
 			window.alert('Could not save the task limit. Please try again.')
 		}
 	}
-	//Add the new task from TaskForm to the existing task list
+	// Create a task and add the saved result to the board
 	async function handleCreateTask(newTask: NewTask) {
 		const inProgressTaskCount = countTasksByStatus(tasks, 'in-progress')
-		// prevent user from adding more than set number of tasks to in-progress
+		// Enforce the in-progress limit before creating the task
 		if (
 			newTask.status === 'in-progress' &&
 			inProgressTaskCount >= maxInProgressTasks
@@ -127,10 +121,8 @@ function App() {
 			return
 		}
 		try {
-			const createdTask = await createTask(newTask)
-			//spread 
+			const createdTask = await createTask(newTask) 
 			setTasks((currentTasks) => [...currentTasks, createdTask])
-			//Close the task form modal after adding the new task
 			setIsTaskFormOpen(false)
 		} catch (error) {
 			console.error(error)
@@ -142,22 +134,21 @@ function App() {
 		setTaskToEdit(task)
 		setIsTaskFormOpen(true)
 	}
-	// Replace the edited task with its updated version
+	// Validate and save changes to an existing task
 	async function handleUpdateTask(updatedTask: Task) {
 		const originalTask = tasks.find(
 			(task) => task.id === updatedTask.id
 		)
 		const isMovingIntoInProgress =
 			updatedTask.status === 'in-progress' &&
-			//only if it wasnt already in-progress before
 			originalTask?.status !== 'in-progress'
 		const inProgressTaskCount = countTasksByStatus(tasks, 'in-progress')	
+		// Enforce the limit only when a task enters In progress
 		if (
 			isMovingIntoInProgress &&
 			inProgressTaskCount >= maxInProgressTasks
 		) {
 			showInProgressLimitAlert()
-			//task does not update
 			return false
 		}
 		try {
@@ -181,17 +172,17 @@ function App() {
 	}
 	// Change the status of the task with the matching id
 	async function handleTaskStatusChange(taskId: string, newStatus: TaskStatus) {
-		// Find the task that will be updated
 		const taskToUpdate = tasks.find((task) => task.id === taskId)
 		if (!taskToUpdate) {
 			return
 		}
 		const inProgressTaskCount = countTasksByStatus(tasks, 'in-progress')
-		//if there are X number of tasks - stops user from putting another in status in progress
+		// Enforce the in-progress limit before changing the status
 		if (newStatus === 'in-progress' && inProgressTaskCount >= maxInProgressTasks) {
 			showInProgressLimitAlert()
 			return
 		}
+		// Reapply the automatic priority rule after a status change
 		const shouldUseHighPriority = shouldTaskUseHighPriority(
 			newStatus,
 			taskToUpdate.dueDate
@@ -221,8 +212,6 @@ function App() {
 		try {
 			await deleteTask(taskId)
 			setTasks((currentTasks) =>
-				//!== taskId keeps all tasks that do not have the chosen id
-				//tasks with the chosen id is now not included in the array -> immutable update
 				currentTasks.filter((task) => task.id !== taskId)
 			)
 		} catch (error) {
@@ -250,13 +239,11 @@ function App() {
 		)
 	}
 	return (
-		// <> and </> makes a fragment. react wants a fragment to put the komponents in, this makes it without an extra html-element
 		<>
 			<Header 
 				onAddTask={handleOpenAddTask} 
 				onSetLimit={handleSetInProgressLimit}
 			/>
-			{/* if false dont show new task form modal */}
 			{isTaskFormOpen && (
 				<TaskModal
 					taskToEdit={taskToEdit}
@@ -272,7 +259,6 @@ function App() {
 				/>
 			)}
 			{taskLoadError && <p role="alert">{taskLoadError}</p>}			
-			{/* Send array to board */}
 			<KanbanBoard 
 				tasks={tasks}
 				onStatusChange={handleTaskStatusChange}

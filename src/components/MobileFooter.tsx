@@ -8,6 +8,7 @@ interface MobileFooterProps {
 	onSetLimit: () => void
 }
 
+// Display compact navigation actions on small screens
 function MobileFooter({ onAddTask, onSetLimit }: MobileFooterProps) {
 	const { role } = useAuth()
 	return (

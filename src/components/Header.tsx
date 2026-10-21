@@ -9,7 +9,7 @@ interface HeaderProps {
 }
 
 
-//(reminder to myself: Capital H --> react)
+// Display the title and actions available to signed-in users
 function Header({ onAddTask, onSetLimit }: HeaderProps) {
 	const { session, role } = useAuth()
 	return (
