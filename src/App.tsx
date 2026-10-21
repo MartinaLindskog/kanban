@@ -23,6 +23,9 @@ function App() {
 	const [taskToEdit, setTaskToEdit] = useState<Task | null>(null)
 	// Load tasks after sign-in and clear them after sign-out	
 	useEffect(() => {
+		if (isLoadingSession) {
+			return
+		}
 		if (!session) {
 			setTasks([])
 			setIsLoadingTasks(false)
@@ -42,7 +45,7 @@ function App() {
 			}
 		}
 		loadTasks()
-	}, [session])
+	}, [session, isLoadingSession])
 	// Load the saved in-progress limit after sign-in
 	useEffect(() => {
 		if (!session) return
