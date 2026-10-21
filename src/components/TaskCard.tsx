@@ -43,7 +43,6 @@ export default function TaskCard({ task, onStatusChange, onDeleteTask, onEditTas
 			<p><strong>Priority:</strong> {task.priority}</p>
 			<div className="task-card-actions">
 				<button
-					className="task-edit-button"
 					type="button"
 					onClick={() => onEditTask(task)}
 				>

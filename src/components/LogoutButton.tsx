@@ -8,7 +8,6 @@ export default function LogoutButton({ iconOnly = false }: LogoutButtonProps) {
 	const { signOut } = useAuth()
 	return (
 		<button
-			className="logout-button"
 			type="button"
 			onClick={() => void signOut()}
 			aria-label="Log out"

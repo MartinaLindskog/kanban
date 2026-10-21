@@ -72,7 +72,7 @@ function CatOfTheDay( { iconOnly = false }: CatOfTheDayProps) {
 		                        src={catImage.url}
 		                        alt="Cat of the day"
 	                        />
-                            <p className="daily-cat-breed">
+                            <p>
                                 <strong>Breed:</strong> {catImage.breeds[0]?.name ?? 'Unknown'}
                             </p>
                         </>

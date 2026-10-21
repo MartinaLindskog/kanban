@@ -15,7 +15,6 @@ function MobileFooter({ onAddTask, onSetLimit }: MobileFooterProps) {
 			<ThemeToggle iconOnly />
 			{role === 'admin' && (
 				<button
-					className="settings-button"
 					type="button"
 					aria-label="Edit maximum tasks"
 					title="Edit maximum tasks"

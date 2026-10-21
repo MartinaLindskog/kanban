@@ -16,7 +16,6 @@ export default function ThemeToggle( { iconOnly = false }: ThemeToggleProps) {
 	}
 	return (
 		<button
-			className="theme-toggle-button"
 			type="button"
             aria-label={buttonLabel}
             title={buttonLabel}

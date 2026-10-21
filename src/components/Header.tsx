@@ -20,7 +20,6 @@ function Header({ onAddTask, onSetLimit }: HeaderProps) {
 					<ThemeToggle />
 					{role === 'admin' && (
 						<button
-							className="settings-button"
 							type="button"
 							onClick={onSetLimit}
 						>

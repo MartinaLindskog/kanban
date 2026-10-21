@@ -71,7 +71,7 @@ export default function TaskForm({ onCreateTask, taskToEdit, onUpdateTask }: Tas
 		setIsSubmitting(false)
 	}
 	return (
-		<section className="task-form-container">
+		<section>
 			{/* if edit task then show edit task, otherwise show add task */}
 			<h2>{taskToEdit ? 'Edit task' : 'Add task'}</h2>
 			<form className="task-form" onSubmit={handleSubmit}>
