@@ -62,6 +62,8 @@ option {
 }
 
 button {
+	min-width: 44px;
+	min-height: 44px;
 	background-color: var(--theme-primary);
 	color: var(--theme-contrast);
 	border: 1px solid var(--theme-contrast);

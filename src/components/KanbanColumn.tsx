@@ -49,6 +49,7 @@ function KanbanColumn({ title, tasks, imageSrc, onStatusChange, onDeleteTask, st
 				<h2>{title} ({tasks.length})</h2>
 				<button
 					type="button"
+					className="column-toggle-button"
 					onClick={() => setIsOpen(!isOpen)}
 					aria-expanded={isOpen}
 					aria-label={`Toggle ${title} tasks`}
