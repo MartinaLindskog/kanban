@@ -10,14 +10,14 @@ export async function requireAuth(request, response, next) {
 		})
 	}
 	const accessToken = authorizationHeader.slice(7)
-    const { data, error } = await supabase.auth.getUser(accessToken)
-    if (error || !data.user) {
-        return response.status(401).json({
-            message: 'Your login session is not valid.'
-        })
-    }
-    request.user = data.user
-    next()
+	const { data, error } = await supabase.auth.getUser(accessToken)
+	if (error || !data.user) {
+		return response.status(401).json({
+			message: 'Your login session is not valid.'
+		})
+	}
+	request.user = data.user
+	next()
 }
 // Stop signed-in users who do not have the admin role
 export async function requireAdmin(request, response, next) {

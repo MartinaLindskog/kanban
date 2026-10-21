@@ -33,9 +33,7 @@ export default function TaskCard({ task, onStatusChange, onDeleteTask, onEditTas
 				</button>
 			)}
 			<h3>{task.title}</h3>
-
 			{task.comment && <p>{task.comment}</p>}
-
 			{task.assignee && (
 				<p><strong>Assigned to:</strong> {task.assignee}</p>
 			)}
@@ -56,7 +54,6 @@ export default function TaskCard({ task, onStatusChange, onDeleteTask, onEditTas
 						Move to In progress
 					</button>
 				)}
-
 				{task.status === 'in-progress' && (
 					<button
 						type="button"

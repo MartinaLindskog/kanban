@@ -7,18 +7,18 @@ export default function LoginForm() {
 	const [password, setPassword] = useState('')
 	const [errorMessage, setErrorMessage] = useState('')
 	const [isSubmitting, setIsSubmitting] = useState(false)
-    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault()
-        setErrorMessage('')
-        setIsSubmitting(true)
-        try {
-            await signIn(email, password)
-        } catch {
-            setErrorMessage('Could not log in. Check your email and password.')
-        } finally {
-            setIsSubmitting(false)
-        }
-    }
+	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+		event.preventDefault()
+		setErrorMessage('')
+		setIsSubmitting(true)
+		try {
+			await signIn(email, password)
+		} catch {
+			setErrorMessage('Could not log in. Check your email and password.')
+		} finally {
+			setIsSubmitting(false)
+		}
+	}
 	return (
 		<main className="login-page">
 			<section className="login-card" aria-labelledby="login-title">

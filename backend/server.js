@@ -30,7 +30,6 @@ function getDayOfYear(date = new Date()) {
 		date.getUTCDate()
 	)
 	const millisecondsPerDay = 1000 * 60 * 60 * 24
-
 	return Math.floor((currentDate - startOfYear) / millisecondsPerDay)
 }
 

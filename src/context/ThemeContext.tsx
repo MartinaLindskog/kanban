@@ -16,14 +16,14 @@ interface ThemeProviderProps {
 // Make theme values available to nested components
 export function ThemeProvider({ children }: ThemeProviderProps) {
 	const [theme, setTheme] = useState<Theme>(() => {
-        const savedTheme = localStorage.getItem('theme')
-        return savedTheme === 'light' ? 'light' : 'dark'
-    })
-    // Tell CSS which theme is currently active
-        useEffect(() => {
-	        document.documentElement.dataset.theme = theme
-            localStorage.setItem('theme', theme)
-        }, [theme])
+		const savedTheme = localStorage.getItem('theme')
+		return savedTheme === 'light' ? 'light' : 'dark'
+	})
+	// Tell CSS which theme is currently active
+	useEffect(() => {
+		document.documentElement.dataset.theme = theme
+		localStorage.setItem('theme', theme)
+	}, [theme])
 	// Switch between the dark and light themes
 	function toggleTheme() {
 		setTheme((currentTheme) =>

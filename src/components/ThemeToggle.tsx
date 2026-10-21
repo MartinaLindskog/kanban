@@ -7,18 +7,17 @@ interface ThemeToggleProps {
 // Let the user switch between the dark and light themes
 export default function ThemeToggle( { iconOnly = false }: ThemeToggleProps) {
 	const { theme, toggleTheme } = useTheme()
-    	// Choose text for desktop or a symbol for mobile
-	    const buttonLabel = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
-	    let buttonContent = theme === 'dark' ? 'Light mode' : 'Dark mode'
-
+	// Choose text for desktop or a symbol for mobile
+	const buttonLabel = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+	let buttonContent = theme === 'dark' ? 'Light mode' : 'Dark mode'
 	if (iconOnly) {
 		buttonContent = theme === 'dark' ? '☀️' : '🌙'
 	}
 	return (
 		<button
 			type="button"
-            aria-label={buttonLabel}
-            title={buttonLabel}
+			aria-label={buttonLabel}
+			title={buttonLabel}
 			onClick={toggleTheme}
 		>
 			{buttonContent}

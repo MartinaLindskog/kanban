@@ -6,7 +6,7 @@ const TASKS_API_URL = `${API_BASE_URL}/api/tasks`
 // Fetch all tasks from the backend
 export async function getTasks(): Promise<Task[]> {
 	const response = await fetch(TASKS_API_URL, {
-	headers: await getAuthHeaders()
+		headers: await getAuthHeaders()
 	})
 	if (!response.ok) {
 		throw new Error(`Could not load tasks: ${response.status}`)
@@ -44,13 +44,10 @@ export async function updateTask(updatedTask: Task): Promise<Task> {
 		},
 		body: JSON.stringify(updatedTask)
 	})
-
 	if (!response.ok) {
 		throw new Error(`Could not update task: ${response.status}`)
 	}
-
 	const savedTask: Task = await response.json()
-
 	return savedTask
 }
 

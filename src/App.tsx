@@ -80,7 +80,6 @@ function App() {
 			window.clearInterval(intervalId)
 		}
 	}, [])
-
 	// Open an empty task form for creating a new task
 	function handleOpenAddTask() {
 		setTaskToEdit(null)

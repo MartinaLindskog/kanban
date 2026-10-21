@@ -9,44 +9,44 @@ interface CatOfTheDayProps {
 
 // Display the button and content for the daily cat feature
 function CatOfTheDay( { iconOnly = false }: CatOfTheDayProps) {
-    // Track whether the daily cat modal is open
+	// Track whether the daily cat modal is open
 	const [isCatModalOpen, setIsCatModalOpen] = useState(false)
-    // Store the cat image returned by the backend
+	// Store the cat image returned by the backend
 	const [catImage, setCatImage] = useState<CatImage | null>(null)
 	// Track whether the cat image is being loaded
 	const [isLoadingCat, setIsLoadingCat] = useState(false)
-    // Store an error message if the cat image cannot be loaded
-    const [catError, setCatError] = useState('')
+	// Store an error message if the cat image cannot be loaded
+	const [catError, setCatError] = useState('')
 	// Open the modal and load today's cat image
 	async function handleShowDailyCat() {
 		setIsCatModalOpen(true)
 		setIsLoadingCat(true)
-        setCatError('')
-        setCatImage(null)
+		setCatError('')
+		setCatImage(null)
 		try {
 			const loadedCat = await getDailyCat()
 			setCatImage(loadedCat)
 		} catch (error) {
-	        setCatError(
+			setCatError(
 				error instanceof Error ? error.message : 'Could not load cat of the day.'
 			)
-        } finally {
+		} finally {
 			setIsLoadingCat(false)
 		}
 	}
-    return (
+	return (
 		<section className="daily-cat">
 			<button
 				className="daily-cat-button"
 				type="button"
-                aria-label="Show cat of the day"
-                title="Show cat of the day"
+				aria-label="Show cat of the day"
+				title="Show cat of the day"
 				onClick={handleShowDailyCat}
-                disabled={isLoadingCat}
+				disabled={isLoadingCat}
 			>
 				{iconOnly ? '😻' : 'Cat of the day'}
 			</button>
-            {isCatModalOpen && (
+			{isCatModalOpen && (
 				<div className="modal-backdrop">
 					<div
 						className="task-modal daily-cat-modal"
@@ -63,20 +63,20 @@ function CatOfTheDay( { iconOnly = false }: CatOfTheDayProps) {
 							×
 						</button>
 						<h2>Cat of the day</h2>
-                        {isLoadingCat && (<LoadingIndicator message="Loading cat..." />)}
-                        {catError && <p role="alert">{catError}</p>}
-                        {!isLoadingCat && catImage && (
-                        <>
-	                        <img
-		                        className="daily-cat-image"
-		                        src={catImage.url}
-		                        alt="Cat of the day"
-	                        />
-                            <p>
-                                <strong>Breed:</strong> {catImage.breeds[0]?.name ?? 'Unknown'}
-                            </p>
-                        </>
-                        )}
+						{isLoadingCat && (<LoadingIndicator message="Loading cat..." />)}
+						{catError && <p role="alert">{catError}</p>}
+						{!isLoadingCat && catImage && (
+							<>
+								<img
+									className="daily-cat-image"
+									src={catImage.url}
+									alt="Cat of the day"
+								/>
+								<p>
+									<strong>Breed:</strong> {catImage.breeds[0]?.name ?? 'Unknown'}
+								</p>
+							</>
+						)}
 					</div>
 				</div>
 			)}

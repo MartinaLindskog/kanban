@@ -10,7 +10,7 @@ export async function getDailyCat(): Promise<CatImage> {
 	})
 	if (!response.ok) {
 		const errorData: { message?: string } = await response.json()
-        throw new Error(errorData.message ?? 'Could not load cat of the day.')
+		throw new Error(errorData.message ?? 'Could not load cat of the day.')
 	}
 	const catImage: CatImage = await response.json()
 	return catImage
