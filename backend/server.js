@@ -3,6 +3,7 @@ import express from 'express'
 import cors from 'cors'
 import supabase from './supabaseClient.js'
 import { requireAuth, requireAdmin } from './middleware/authMiddleware.js'
+import { validateTaskInput } from './validation/taskValidation.js'
 
 // Create the Express application
 const app = express()
@@ -105,6 +106,10 @@ app.get('/api/tasks', requireAuth, async (request, response) => {
 
 // Create a new task when the frontend sends POST /api/tasks
 app.post('/api/tasks', requireAuth, async (request, response) => {
+	const validationError = validateTaskInput(request.body)
+	if (validationError) {
+		return response.status(400).json({ message: validationError })
+	}
 	// Convert the submitted task to database column names
 	const taskToInsert = {
 		title: request.body.title,
@@ -162,6 +167,10 @@ app.delete('/api/tasks/:id', requireAuth, requireAdmin, async (request, response
 
 // Update the task with the matching id
 app.put('/api/tasks/:id', requireAuth, async (request, response) => {
+	const validationError = validateTaskInput(request.body)
+	if (validationError) {
+		return response.status(400).json({ message: validationError })
+	}
 	// Convert the submitted changes to database column names	
 	const taskToUpdate = {
 		title: request.body.title,
