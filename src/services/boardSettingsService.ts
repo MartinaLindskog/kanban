@@ -1,8 +1,7 @@
-import { getAuthHeaders } from './apiClient'
+import { API_BASE_URL, getAuthHeaders } from './apiClient'
 
 // Store the backend endpoint used for board settings
-const BOARD_SETTINGS_API_URL =
-	'http://localhost:5001/api/board-settings'
+const BOARD_SETTINGS_API_URL = `${API_BASE_URL}/api/board-settings`
 
 // Describe the JSON returned by the backend
 interface BoardSettingsResponse {

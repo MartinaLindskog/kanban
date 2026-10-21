@@ -1,10 +1,7 @@
 import type { Task, NewTask } from '../types/Task'
-import { getAuthHeaders } from './apiClient'
+import { API_BASE_URL, getAuthHeaders } from './apiClient'
 
-// The backend endpoint used for task requests
-//tillfällig adress nu tills publicering 
-const TASKS_API_URL = 'http://localhost:5001/api/tasks'
-
+const TASKS_API_URL = `${API_BASE_URL}/api/tasks`
 
 // Fetch all tasks from the backend
 export async function getTasks(): Promise<Task[]> {
@@ -17,7 +14,6 @@ export async function getTasks(): Promise<Task[]> {
 	const tasks: Task[] = await response.json()
 	return tasks
 }
-
 
 // Send a new task to the backend
 export async function createTask(newTask: NewTask): Promise<Task> {

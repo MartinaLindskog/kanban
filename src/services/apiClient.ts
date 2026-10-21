@@ -10,3 +10,6 @@ export async function getAuthHeaders() {
 		Authorization: `Bearer ${session.access_token}`
 	}
 }
+
+// Store the backend base URL in one place
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5001'

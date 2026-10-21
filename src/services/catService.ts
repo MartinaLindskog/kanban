@@ -1,8 +1,7 @@
 import type { CatImage } from '../types/CatImage'
-import { getAuthHeaders } from './apiClient'
+import { API_BASE_URL, getAuthHeaders } from './apiClient'
 
-// Store the backend endpoint used for the daily cat request
-const DAILY_CAT_API_URL = 'http://localhost:5001/api/daily-cat'
+const DAILY_CAT_API_URL = `${API_BASE_URL}/api/daily-cat`
 
 // Fetch today's cat image from the backend
 export async function getDailyCat(): Promise<CatImage> {

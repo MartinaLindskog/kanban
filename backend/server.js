@@ -4,6 +4,7 @@ import cors from 'cors'
 import supabase from './supabaseClient.js'
 import { requireAuth, requireAdmin } from './middleware/authMiddleware.js'
 import { validateTaskInput } from './validation/taskValidation.js'
+import { toApiTask, toDatabaseTask } from './mappers/taskMapper.js'
 
 // Create the Express application
 const app = express()
@@ -92,15 +93,7 @@ app.get('/api/tasks', requireAuth, async (request, response) => {
 		})
 	}
 	// Convert database column names to the format used by React
-	const formattedTasks = data.map((task) => ({
-		id: task.id,
-		title: task.title,
-		comment: task.comment ?? '',
-		assignee: task.assignee ?? '',
-		dueDate: task.due_date ?? '',
-		priority: task.priority,
-		status: task.status
-	}))
+	const formattedTasks = data.map(toApiTask)
 	response.status(200).json(formattedTasks)
 })
 
@@ -111,14 +104,7 @@ app.post('/api/tasks', requireAuth, async (request, response) => {
 		return response.status(400).json({ message: validationError })
 	}
 	// Convert the submitted task to database column names
-	const taskToInsert = {
-		title: request.body.title,
-		comment: request.body.comment || null,
-		assignee: request.body.assignee || null,
-		due_date: request.body.dueDate || null,
-		priority: request.body.priority,
-		status: request.body.status
-	}
+	const taskToInsert = toDatabaseTask(request.body)
 	const { data, error } = await supabase
 		.from('tasks')
 		.insert(taskToInsert)
@@ -131,15 +117,7 @@ app.post('/api/tasks', requireAuth, async (request, response) => {
 		})
 	}
 	// Convert the saved row back to React's format
-	const savedTask = {
-		id: data.id,
-		title: data.title,
-		comment: data.comment ?? '',
-		assignee: data.assignee ?? '',
-		dueDate: data.due_date ?? '',
-		priority: data.priority,
-		status: data.status
-	}
+	const savedTask = toApiTask(data)
 	response.status(201).json(savedTask)
 })
 
@@ -172,14 +150,7 @@ app.put('/api/tasks/:id', requireAuth, async (request, response) => {
 		return response.status(400).json({ message: validationError })
 	}
 	// Convert the submitted changes to database column names	
-	const taskToUpdate = {
-		title: request.body.title,
-		comment: request.body.comment || null,
-		assignee: request.body.assignee || null,
-		due_date: request.body.dueDate || null,
-		priority: request.body.priority,
-		status: request.body.status
-	}
+	const taskToUpdate = toDatabaseTask(request.body)
 	const { data, error } = await supabase
 		.from('tasks')
 		.update(taskToUpdate)
@@ -198,15 +169,7 @@ app.put('/api/tasks/:id', requireAuth, async (request, response) => {
 		})
 	}
 	// Convert the updated row back to React's format	
-	const updatedTask = {
-		id: data.id,
-		title: data.title,
-		comment: data.comment ?? '',
-		assignee: data.assignee ?? '',
-		dueDate: data.due_date ?? '',
-		priority: data.priority,
-		status: data.status
-	}
+	const updatedTask = toApiTask(data)
 	response.status(200).json(updatedTask)
 })
 
