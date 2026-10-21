@@ -15,8 +15,8 @@ app.use(cors())
 // Parse JSON sent from the React frontend
 app.use(express.json())
 
-// Use port 5001 for local backend development
-const PORT = 5001 
+// Use the hosting platform's port, or 5001 during local development
+const PORT = process.env.PORT || 5001
 
 // Store the external endpoint used to request one cat image
 const CAT_API_URL = 'https://api.thecatapi.com/v1/images/search?limit=1&has_breeds=1&include_breeds=1'
